@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forno Rosso Pizzeria — Wood-Fired Pizza</title>
+<meta name="description" content="Forno Rosso Pizzeria — authentic wood-fired pizza made with a century-old family recipe. Dine in, takeout, and online ordering.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍕</text></svg>">
+</head>
+<body>
+
+<div id="top-alert" class="top-alert">
+  <p>🔥 Now baking daily 11am–10pm &nbsp;|&nbsp; Order online for pickup or delivery</p>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a href="#top" class="logo">
+      <span class="logo-mark">🍕</span>
+      <span class="logo-text">Forno Rosso</span>
+    </a>
+
+    <nav class="main-nav" id="main-nav">
+      <ul>
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#menu" class="nav-link">Menu</a></li>
+        <li><a href="#about" class="nav-link">Our Story</a></li>
+        <li><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li><a href="#hours" class="nav-link">Hours &amp; Location</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a href="tel:+15551234567" class="phone-link">(555) 123-4567</a>
+      <a href="#contact" class="btn btn-primary">Order Online</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" id="home">
+    <div id="top"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <p class="eyebrow reveal">Family Owned Since 1962</p>
+      <h1 class="reveal">Wood-Fired Pizza,<br>Baked the Old-Fashioned Way</h1>
+      <p class="hero-sub reveal">Hand-tossed dough, San Marzano tomatoes, and a 900°F brick oven — three generations of the same family recipe.</p>
+      <div class="hero-cta reveal">
+        <a href="#menu" class="btn btn-primary btn-lg">View Menu</a>
+        <a href="#contact" class="btn btn-outline btn-lg">Order Now</a>
+      </div>
+    </div>
+    <a href="#about" class="scroll-cue" aria-label="Scroll down">↓</a>
+  </section>
+
+  <section class="stats">
+    <div class="container stats-grid">
+      <div class="stat reveal">
+        <span class="stat-number">60+</span>
+        <span class="stat-label">Years of Tradition</span>
+      </div>
+      <div class="stat reveal">
+        <span class="stat-number">900°F</span>
+        <span class="stat-label">Wood-Fired Oven</span>
+      </div>
+      <div class="stat reveal">
+        <span class="stat-number">20+</span>
+        <span class="stat-label">Pizzas on the Menu</span>
+      </div>
+      <div class="stat reveal">
+        <span class="stat-number">4.8★</span>
+        <span class="stat-label">Average Rating</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="container about-grid">
+      <div class="about-image reveal">
+        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80" alt="Chef sliding a pizza into a wood-fired brick oven">
+      </div>
+      <div class="about-text reveal">
+        <p class="eyebrow">Our Story</p>
+        <h2>From Nonna's Kitchen to Our Brick Oven</h2>
+        <p>Forno Rosso started in 1962 when Nonna Lucia began selling pizza from a small storefront, using a recipe carried over from her hometown outside Naples. Today, her grandchildren run the same oven, the same 48-hour fermented dough, and the same sauce recipe — nothing rushed, nothing shortcut.</p>
+        <p>Every pizza is hand-stretched to order and baked in under 90 seconds at 900°F, giving it that signature leopard-spotted crust and smoky char.</p>
+        <a href="#menu" class="btn btn-secondary">Explore the Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="menu" id="menu">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">What We're Baking</p>
+        <h2>Our Menu</h2>
+        <p class="section-sub">Classic recipes, quality ingredients, made fresh daily.</p>
+      </div>
+
+      <div class="menu-tabs reveal" id="menu-tabs">
+        <button class="menu-tab active" data-category="classics">Classic Pizzas</button>
+        <button class="menu-tab" data-category="specialty">Specialty Pizzas</button>
+        <button class="menu-tab" data-category="starters">Starters &amp; Salads</button>
+        <button class="menu-tab" data-category="drinks">Drinks &amp; Dessert</button>
+      </div>
+
+      <div class="menu-grid" id="menu-grid">
+
+        <!-- Classics -->
+        <article class="menu-item" data-category="classics">
+          <div class="menu-item-top">
+            <h3>Margherita</h3>
+            <span class="price">$16</span>
+          </div>
+          <p>San Marzano tomato, fresh mozzarella, basil, extra virgin olive oil.</p>
+        </article>
+        <article class="menu-item" data-category="classics">
+          <div class="menu-item-top">
+            <h3>Pepperoni</h3>
+            <span class="price">$18</span>
+          </div>
+          <p>House tomato sauce, mozzarella, double pepperoni, oregano.</p>
+        </article>
+        <article class="menu-item" data-category="classics">
+          <div class="menu-item-top">
+            <h3>Marinara</h3>
+            <span class="price">$14</span>
+          </div>
+          <p>Tomato, garlic, oregano, olive oil. No cheese, all flavor.</p>
+        </article>
+        <article class="menu-item" data-category="classics">
+          <div class="menu-item-top">
+            <h3>Quattro Formaggi</h3>
+            <span class="price">$19</span>
+          </div>
+          <p>Mozzarella, gorgonzola, fontina, parmigiano reggiano.</p>
+        </article>
+
+        <!-- Specialty -->
+        <article class="menu-item" data-category="specialty">
+          <div class="menu-item-top">
+            <h3>Nonna Lucia</h3>
+            <span class="price">$21</span>
+          </div>
+          <p>Roasted garlic cream, mozzarella, wild mushroom, truffle oil, thyme.</p>
+        </article>
+        <article class="menu-item" data-category="specialty">
+          <div class="menu-item-top">
+            <h3>Diavola</h3>
+            <span class="price">$20</span>
+          </div>
+          <p>Spicy soppressata, calabrian chili honey, mozzarella, fresh chili.</p>
+        </article>
+        <article class="menu-item" data-category="specialty">
+          <div class="menu-item-top">
+            <h3>Prosciutto &amp; Fig</h3>
+            <span class="price">$22</span>
+          </div>
+          <p>Fig jam, gorgonzola, mozzarella, prosciutto di parma, arugula.</p>
+        </article>
+        <article class="menu-item" data-category="specialty">
+          <div class="menu-item-top">
+            <h3>Garden Verde</h3>
+            <span class="price">$19</span>
+          </div>
+          <p>Pesto base, mozzarella, zucchini, roasted peppers, cherry tomato.</p>
+        </article>
+
+        <!-- Starters -->
+        <article class="menu-item" data-category="starters">
+          <div class="menu-item-top">
+            <h3>Garlic Knots</h3>
+            <span class="price">$8</span>
+          </div>
+          <p>Baked dough knots, garlic butter, parmesan, marinara for dipping.</p>
+        </article>
+        <article class="menu-item" data-category="starters">
+          <div class="menu-item-top">
+            <h3>Burrata Caprese</h3>
+            <span class="price">$14</span>
+          </div>
+          <p>Creamy burrata, heirloom tomato, basil, balsamic glaze.</p>
+        </article>
+        <article class="menu-item" data-category="starters">
+          <div class="menu-item-top">
+            <h3>Caesar Salad</h3>
+            <span class="price">$11</span>
+          </div>
+          <p>Romaine, house caesar dressing, parmesan, sourdough croutons.</p>
+        </article>
+        <article class="menu-item" data-category="starters">
+          <div class="menu-item-top">
+            <h3>Antipasto Platter</h3>
+            <span class="price">$16</span>
+          </div>
+          <p>Cured meats, marinated olives, artichoke, aged provolone.</p>
+        </article>
+
+        <!-- Drinks -->
+        <article class="menu-item" data-category="drinks">
+          <div class="menu-item-top">
+            <h3>Italian Soda</h3>
+            <span class="price">$4</span>
+          </div>
+          <p>Ask about today's flavor. Made fresh in-house.</p>
+        </article>
+        <article class="menu-item" data-category="drinks">
+          <div class="menu-item-top">
+            <h3>House Chianti (glass)</h3>
+            <span class="price">$9</span>
+          </div>
+          <p>Medium-bodied red, imported from Tuscany.</p>
+        </article>
+        <article class="menu-item" data-category="drinks">
+          <div class="menu-item-top">
+            <h3>Tiramisu</h3>
+            <span class="price">$8</span>
+          </div>
+          <p>Espresso-soaked ladyfingers, mascarpone, cocoa.</p>
+        </article>
+        <article class="menu-item" data-category="drinks">
+          <div class="menu-item-top">
+            <h3>Cannoli (2pc)</h3>
+            <span class="price">$7</span>
+          </div>
+          <p>Crisp shells, sweet ricotta filling, candied pistachio.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">A Peek Inside</p>
+        <h2>Gallery</h2>
+      </div>
+      <div class="gallery-grid reveal">
+        <img src="https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?auto=format&fit=crop&w=600&q=80" alt="Fresh margherita pizza with basil">
+        <img src="https://images.unsplash.com/photo-1548365328-9f547fb0953b?auto=format&fit=crop&w=600&q=80" alt="Pizza dough being hand-stretched">
+        <img src="https://images.unsplash.com/photo-1590947132387-155cc02f3212?auto=format&fit=crop&w=600&q=80" alt="Wood-fired brick oven with flames">
+        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Slice of pizza being lifted">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80" alt="Rustic pizzeria dining room interior">
+        <img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=600&q=80" alt="Assortment of pizzas on a wooden table">
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Word on the Street</p>
+        <h2>What Our Guests Say</h2>
+      </div>
+      <div class="testimonial-grid">
+        <blockquote class="testimonial reveal">
+          <p>"Best crust I've had outside of Naples. The char, the chew — it's all there."</p>
+          <cite>— Maria T.</cite>
+        </blockquote>
+        <blockquote class="testimonial reveal">
+          <p>"Been coming here for 15 years. Same great pizza, same warm welcome every time."</p>
+          <cite>— James R.</cite>
+        </blockquote>
+        <blockquote class="testimonial reveal">
+          <p>"The Prosciutto &amp; Fig is unreal. Ordered it three times this month already."</p>
+          <cite>— Alicia P.</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="hours-location" id="hours">
+    <div class="container hours-grid">
+      <div class="hours-card reveal">
+        <p class="eyebrow">Hours</p>
+        <h2>When We're Open</h2>
+        <ul class="hours-list">
+          <li><span>Monday – Thursday</span><span>11:00 AM – 9:00 PM</span></li>
+          <li><span>Friday – Saturday</span><span>11:00 AM – 10:00 PM</span></li>
+          <li><span>Sunday</span><span>12:00 PM – 8:00 PM</span></li>
+        </ul>
+      </div>
+      <div class="location-card reveal">
+        <p class="eyebrow">Find Us</p>
+        <h2>Visit the Pizzeria</h2>
+        <address>
+          123 Elm Street<br>
+          Riverside, CA 92501
+        </address>
+        <p><a href="tel:+15551234567">(555) 123-4567</a></p>
+        <p><a href="mailto:hello@fornorosso-pizza.example">hello@fornorosso-pizza.example</a></p>
+        <div class="map-embed">
+          <iframe
+            title="Map to Forno Rosso Pizzeria"
+            src="https://maps.google.com/maps?q=Riverside%2C%20CA&t=&z=13&ie=UTF8&iwloc=&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band" id="contact">
+    <div class="container cta-band-inner reveal">
+      <h2>Hungry Yet?</h2>
+      <p>Order online for pickup or delivery, or call ahead and we'll have it hot and ready.</p>
+      <div class="hero-cta">
+        <a href="tel:+15551234567" class="btn btn-primary btn-lg">Call (555) 123-4567</a>
+        <a href="#" class="btn btn-outline btn-lg" id="order-online-btn">Order Online</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <a href="#top" class="logo">
+        <span class="logo-mark">🍕</span>
+        <span class="logo-text">Forno Rosso</span>
+      </a>
+      <p class="footer-tagline">Wood-fired pizza, made the old-fashioned way since 1962.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#hours">Hours &amp; Location</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li>123 Elm Street, Riverside, CA 92501</li>
+        <li><a href="tel:+15551234567">(555) 123-4567</a></li>
+        <li><a href="mailto:hello@fornorosso-pizza.example">hello@fornorosso-pizza.example</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <div class="social-links">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="#" aria-label="Yelp">Yelp</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Forno Rosso Pizzeria. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
+
+<script src="js/main.js"></script>
+</body>
+</html>
