@@ -641,7 +641,6 @@ ul{ margin: 0; padding: 0; list-style: none; }
 @media (max-width: 980px){
   .nav-links{ gap: 18px; }
   .nav-links a:not(.nav-cta){ display: none; }
-  .nav-links .nav-cta-only{ display: inline-block; }
 
   .about{ grid-template-columns: 1fr; }
   .about-media{ aspect-ratio: 16/10; }
