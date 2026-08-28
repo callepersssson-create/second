@@ -1,2 +1,8 @@
 https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 npx @21st-dev/cli@latest init --client cursor   # or: claude | vscode | windsurf | codex
+
+Installed as project skills under .claude/skills/ (see .claude/skills/README.md):
+- https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git
+- https://github.com/pbakaus/impeccable.git
+Not installed (account-level Claude plugin, not a git skill repo — install via `/plugin marketplace add` / claude.ai plugin UI):
+- https://claude.com/plugins/frontend-design
