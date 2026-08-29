@@ -1,4 +1,4 @@
-import { createBlobScene, createStudioScene, createTileScene } from "./webgl.js";
+import { createBlobScene, createStudioScene, createTileScene, createStarfield } from "./webgl.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -71,12 +71,26 @@ if (supportsHover && !prefersReduced) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Starfield — the ambient layer that ties every section to one deep,  */
+/* quiet atmosphere.                                                    */
+/* ------------------------------------------------------------------ */
+const starfield = createStarfield(document.getElementById("starfield"), {
+  count: prefersReduced ? 90 : 170,
+  reducedMotion: prefersReduced,
+});
+if (lenis) {
+  lenis.on("scroll", () => starfield.setScrollY(window.scrollY));
+} else {
+  window.addEventListener("scroll", () => starfield.setScrollY(window.scrollY), { passive: true });
+}
+
+/* ------------------------------------------------------------------ */
 /* WebGL scenes                                                        */
 /* ------------------------------------------------------------------ */
 const heroScene = createBlobScene(document.getElementById("hero-canvas"), {
-  colorA: "#16130f",
+  colorA: "#0a0b14",
   colorB: "#1e2de0",
-  colorC: "#ff4433",
+  colorC: "#7c6fff",
   seed: 0.4,
   mouseScope: "global",
 });
@@ -89,24 +103,46 @@ const ctaScene = createBlobScene(document.getElementById("cta-canvas"), {
   mouseScope: "global",
 });
 
+const manifestoCanvas = document.getElementById("manifesto-canvas");
+const manifestoScene = manifestoCanvas
+  ? createBlobScene(manifestoCanvas, {
+      colorA: "#0a0b14",
+      colorB: "#11167a",
+      colorC: "#7c6fff",
+      seed: 1.6,
+      mouseScope: "local",
+    })
+  : null;
+
 const supportCanvas = document.getElementById("support-canvas");
 const supportScene = supportCanvas
   ? createBlobScene(supportCanvas, {
-      colorA: "#f2ecdd",
+      colorA: "#0a0b14",
       colorB: "#ff4433",
-      colorC: "#1e2de0",
+      colorC: "#7c6fff",
       seed: 4.6,
       mouseScope: "local",
     })
   : null;
 
-const aboutCanvas = document.getElementById("about-canvas");
-const aboutScene = aboutCanvas
-  ? createBlobScene(aboutCanvas, {
-      colorA: "#1e2de0",
-      colorB: "#971d13",
-      colorC: "#dcff4f",
+const teamCanvas = document.getElementById("team-canvas");
+const teamScene = teamCanvas
+  ? createBlobScene(teamCanvas, {
+      colorA: "#0a0b14",
+      colorB: "#1e2de0",
+      colorC: "#971d13",
       seed: 7.3,
+      mouseScope: "local",
+    })
+  : null;
+
+const testimonialsCanvas = document.getElementById("testimonials-canvas");
+const testimonialsScene = testimonialsCanvas
+  ? createBlobScene(testimonialsCanvas, {
+      colorA: "#0a0b14",
+      colorB: "#7c6fff",
+      colorC: "#1e2de0",
+      seed: 9.2,
       mouseScope: "local",
     })
   : null;
@@ -304,8 +340,11 @@ document.getElementById("back-to-top").addEventListener("click", () => {
 window.addEventListener("beforeunload", () => {
   heroScene.destroy();
   ctaScene.destroy();
+  if (manifestoScene) manifestoScene.destroy();
   if (supportScene) supportScene.destroy();
-  if (aboutScene) aboutScene.destroy();
+  if (teamScene) teamScene.destroy();
+  if (testimonialsScene) testimonialsScene.destroy();
   if (studioScene) studioScene.destroy();
   tileScenes.forEach((s) => s.destroy());
+  starfield.destroy();
 });

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Web Design UF — Design & development studio</title>
-  <meta name="description" content="Web Design UF is a young studio designing and building fast, distinctive websites — for anybody, any timeline, no templates." />
+  <title>Web Design UF — Design- och utvecklingsstudio</title>
+  <meta name="description" content="Web Design UF är en ung studio som designar och bygger snabba, snygga webbplatser — åt vem som helst, när som helst, utan mallar." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2316130f'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-style='italic' font-size='34' fill='%23dcff4f' text-anchor='middle'%3EUF%3C/text%3E%3C/svg%3E" />
   <script>document.documentElement.classList.add('js');</script>
 
@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body class="is-loading">
+
+  <canvas id="starfield" aria-hidden="true"></canvas>
 
   <div class="cursor cursor--dot" aria-hidden="true"></div>
   <div class="cursor cursor--ring" aria-hidden="true"></div>
@@ -27,10 +29,10 @@
     <a href="#top" class="nav__logo">Web Design UF</a>
     <div class="nav__right">
       <ul class="nav__links nav__links--min">
-        <li><a href="#work">Work</a></li>
-        <li><a href="#studio">Studio</a></li>
+        <li><a href="#work">Projekt</a></li>
+        <li><a href="#team">Teamet</a></li>
       </ul>
-      <a href="#contact" class="pill">Start a project</a>
+      <a href="#contact" class="pill">Starta ett projekt</a>
     </div>
   </nav>
 
@@ -46,16 +48,16 @@
       </svg>
 
       <div class="wrap hero__content">
-        <p class="eyebrow eyebrow--on-dark hero__eyebrow">Web Design UF — Design &amp; development studio</p>
+        <p class="eyebrow eyebrow--on-dark hero__eyebrow">Web Design UF — Design- och utvecklingsstudio</p>
         <h1 class="hero__headline">
-          <span class="line"><span>Sites with</span></span>
-          <span class="line"><span>a pulse.</span></span>
+          <span class="line"><span>Sajter med</span></span>
+          <span class="line"><span>puls.</span></span>
         </h1>
-        <p class="hero__sub">A small studio designing and building fast, good-looking websites — for anybody, on any timeline, without the templates.</p>
+        <p class="hero__sub">En liten studio som designar och bygger snabba, snygga webbplatser — åt vem som helst, när som helst, utan mallar.</p>
         <div class="hero__actions">
-          <a href="#contact" class="button">Start a project</a>
+          <a href="#contact" class="button">Starta ett projekt</a>
           <a href="#work" class="hero__scroll-cue">
-            See the work
+            Se projekten
             <svg width="14" height="20" viewBox="0 0 14 20" fill="none" aria-hidden="true"><path d="M7 1v17M1 12l6 6 6-6" stroke="currentColor" stroke-width="1.4"/></svg>
           </a>
         </div>
@@ -63,23 +65,24 @@
 
       <div class="marquee" aria-hidden="true">
         <div class="marquee__track">
-          <span>Design — Develop — Launch — Repeat — No templates, ever — </span>
-          <span>Design — Develop — Launch — Repeat — No templates, ever — </span>
+          <span>Design — Utveckling — Lansering — Upprepa — Aldrig några mallar — </span>
+          <span>Design — Utveckling — Lansering — Upprepa — Aldrig några mallar — </span>
         </div>
       </div>
     </header>
 
     <!-- ============ MANIFESTO ============ -->
     <section class="manifesto">
+      <canvas id="manifesto-canvas" aria-hidden="true"></canvas>
       <div class="wrap">
-        <p class="eyebrow manifesto__eyebrow">Who we are</p>
-        <p class="manifesto__quote headline-balance" data-reveal>We're a young team who thinks the internet has room for more personality — so we build websites for anybody, any time zone, any budget that respects the craft.</p>
+        <p class="eyebrow manifesto__eyebrow">Vilka vi är</p>
+        <p class="manifesto__quote headline-balance" data-reveal>Vi är ett ungt team som tycker att internet förtjänar mer personlighet — så vi bygger webbplatser åt vem som helst, i vilken tidszon som helst, till vilken budget som helst som respekterar hantverket.</p>
 
         <dl class="manifesto__stats">
-          <div class="stat" data-reveal><span class="stat__value">41</span><span class="stat__label">Sites launched</span></div>
-          <div class="stat" data-reveal><span class="stat__value">3</span><span class="stat__label">Designers on call</span></div>
-          <div class="stat" data-reveal><span class="stat__value">12</span><span class="stat__label">Countries served</span></div>
-          <div class="stat" data-reveal><span class="stat__value">0</span><span class="stat__label">Templates used</span></div>
+          <div class="stat" data-reveal><span class="stat__value">41</span><span class="stat__label">Lanserade sajter</span></div>
+          <div class="stat" data-reveal><span class="stat__value">3</span><span class="stat__label">Designers redo</span></div>
+          <div class="stat" data-reveal><span class="stat__value">12</span><span class="stat__label">Länder vi levererat till</span></div>
+          <div class="stat" data-reveal><span class="stat__value">0</span><span class="stat__label">Mallar använda</span></div>
         </dl>
       </div>
     </section>
@@ -90,31 +93,31 @@
         <div class="services__track">
 
           <article class="service-panel">
-            <span class="service-panel__folio">01 — The studio</span>
+            <span class="service-panel__folio">01 — Studion</span>
             <div class="service-panel__grid">
               <div>
-                <h2 class="service-panel__heading">Small team.<br />Strong opinions.</h2>
-                <p class="service-panel__body">Three designers, one shared inbox, zero account managers. Every project gets the whole team's attention — not whoever's free that week.</p>
+                <h2 class="service-panel__heading">Litet team.<br />Starka åsikter.</h2>
+                <p class="service-panel__body">Tre personer, en gemensam inkorg, inga kundansvariga som mellanhand. Varje projekt får hela teamets uppmärksamhet — inte bara den som råkar ha tid.</p>
               </div>
               <div class="service-panel__visual"><canvas id="studio-canvas"></canvas></div>
             </div>
           </article>
 
           <article class="service-panel service-panel--work" id="work">
-            <span class="service-panel__folio">02 — The work</span>
+            <span class="service-panel__folio">02 — Projekten</span>
             <div class="service-panel__grid">
               <div>
-                <h2 class="service-panel__heading">Screens we're<br />proud of.</h2>
-                <p class="service-panel__body">A handful of the sites we've shipped recently — brands, shops and menus that finally look as good as they run.</p>
+                <h2 class="service-panel__heading">Skärmar vi är<br />stolta över.</h2>
+                <p class="service-panel__body">Ett urval av sajter vi nyligen levererat — varumärken, butiker och menyer som äntligen ser lika bra ut som de fungerar.</p>
               </div>
               <div class="tile-grid">
                 <a class="tile" href="#contact" data-hue="cobalt">
                   <canvas class="tile__canvas"></canvas>
-                  <span class="tile__meta"><span class="tile__name">North &amp; Lime</span><span class="tile__tag">Restaurant — Brand + Web</span></span>
+                  <span class="tile__meta"><span class="tile__name">North &amp; Lime</span><span class="tile__tag">Restaurang — Varumärke + Webb</span></span>
                 </a>
                 <a class="tile" href="#contact" data-hue="coral">
                   <canvas class="tile__canvas"></canvas>
-                  <span class="tile__meta"><span class="tile__name">Haven Goods</span><span class="tile__tag">Ecommerce</span></span>
+                  <span class="tile__meta"><span class="tile__name">Haven Goods</span><span class="tile__tag">E-handel</span></span>
                 </a>
                 <a class="tile" href="#contact" data-hue="lime">
                   <canvas class="tile__canvas"></canvas>
@@ -122,23 +125,23 @@
                 </a>
                 <a class="tile" href="#contact" data-hue="ink">
                   <canvas class="tile__canvas"></canvas>
-                  <span class="tile__meta"><span class="tile__name">Paloma</span><span class="tile__tag">Editorial — Web</span></span>
+                  <span class="tile__meta"><span class="tile__name">Paloma</span><span class="tile__tag">Redaktionellt — Webb</span></span>
                 </a>
               </div>
             </div>
           </article>
 
           <article class="service-panel">
-            <span class="service-panel__folio">03 — The support</span>
+            <span class="service-panel__folio">03 — Supporten</span>
             <div class="service-panel__grid">
               <div>
-                <h2 class="service-panel__heading">We don't disappear<br />after launch.</h2>
-                <p class="service-panel__body">Every site ships with a real human on call — not a ticket queue.</p>
+                <h2 class="service-panel__heading">Vi försvinner inte<br />efter lansering.</h2>
+                <p class="service-panel__body">Varje sajt levereras med en riktig människa på andra sidan — inte en supportkö.</p>
                 <dl class="spec-list">
-                  <div class="spec-row"><dt>Response time</dt><dd>Under 24h</dd></div>
-                  <div class="spec-row"><dt>Aftercare</dt><dd>90 days, included</dd></div>
-                  <div class="spec-row"><dt>Hosting help</dt><dd>Yes, actually</dd></div>
-                  <div class="spec-row"><dt>Uptime watch</dt><dd>24/7</dd></div>
+                  <div class="spec-row"><dt>Svarstid</dt><dd>Under 24h</dd></div>
+                  <div class="spec-row"><dt>Efterservice</dt><dd>90 dagar, ingår</dd></div>
+                  <div class="spec-row"><dt>Hjälp med hosting</dt><dd>Ja, faktiskt</dd></div>
+                  <div class="spec-row"><dt>Driftövervakning</dt><dd>24/7</dd></div>
                 </dl>
               </div>
               <div class="service-panel__visual"><canvas id="support-canvas"></canvas></div>
@@ -149,50 +152,74 @@
       </div>
     </section>
 
-    <!-- ============ ABOUT THE DESIGNER ============ -->
-    <section class="about">
-      <div class="wrap about__grid">
-        <div class="about__portrait" data-reveal><canvas id="about-canvas"></canvas></div>
-        <div>
-          <p class="eyebrow eyebrow--on-dark about__eyebrow">The person behind the pixels</p>
-          <h2 class="about__name">Uma Ferreira</h2>
-          <p class="about__role">Founder &amp; creative director — Lisbon</p>
-          <p class="about__quote">"I don't believe in 'good enough.' If a site doesn't make you stop scrolling, we're not finished."</p>
-          <p class="about__note">Ten years making brands look like themselves — now doing it faster, louder, and with better music playing in the studio.</p>
+    <!-- ============ TEAM ============ -->
+    <section class="team" id="team">
+      <canvas id="team-canvas" aria-hidden="true"></canvas>
+      <div class="wrap">
+        <div class="team__head">
+          <p class="eyebrow eyebrow--on-dark">Ansiktena bakom skärmen</p>
+          <h2 class="team__heading" data-reveal>Tre personer.<br />Ett gemensamt ansvar.</h2>
+        </div>
+
+        <div class="team__grid">
+          <article class="member" data-reveal>
+            <div class="member__photo" style="--member-tint: var(--cobalt); --member-tint-light: #8a95ff" aria-hidden="true">OB</div>
+            <h3 class="member__name">Oskar Bjurströmer</h3>
+            <p class="member__role">VD</p>
+            <p class="member__desc">Håller ihop teamet och ser till att varje projekt levereras i tid, från idé till lansering.</p>
+            <a class="member__email" href="mailto:Oskar.madjarbjurstomer@jgy.se">Oskar.madjarbjurstomer@jgy.se</a>
+          </article>
+
+          <article class="member" data-reveal>
+            <div class="member__photo" style="--member-tint: var(--coral); --member-tint-light: #ff9a8c" aria-hidden="true">CP</div>
+            <h3 class="member__name">Calle Persson</h3>
+            <p class="member__role">Försäljningschef</p>
+            <p class="member__desc">Första kontakten med kunden — lyssnar in behovet och hittar rätt lösning för just ditt projekt.</p>
+            <a class="member__email" href="mailto:Calle.persson@jgy.se">Calle.persson@jgy.se</a>
+          </article>
+
+          <article class="member" data-reveal>
+            <div class="member__photo" style="--member-tint: var(--violet); --member-tint-light: #b6aeff" aria-hidden="true">SB</div>
+            <h3 class="member__name">Sebastian Billberg</h3>
+            <p class="member__role">Ekonomiansvarig</p>
+            <p class="member__desc">Koll på siffrorna så att resten av teamet kan lägga sin tid på designen.</p>
+            <a class="member__email" href="mailto:Sebastian.billberg@Jgy.se">Sebastian.billberg@Jgy.se</a>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- ============ TESTIMONIALS ============ -->
     <section class="testimonials">
+      <canvas id="testimonials-canvas" aria-hidden="true"></canvas>
       <div class="wrap testimonials__head">
-        <p class="eyebrow">What clients say</p>
+        <p class="eyebrow">Vad kunderna säger</p>
       </div>
       <div class="testimonials__viewport">
         <div class="testimonials__track">
           <figure class="t-card">
             <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">They turned our menu into something people screenshot. Bookings are up 3x since launch.</blockquote>
+            <blockquote class="t-card__quote">De gjorde vår meny till något folk skärmdumpar. Bokningarna har tredubblats sedan lanseringen.</blockquote>
             <figcaption class="t-card__meta">Nico Reyes — North &amp; Lime</figcaption>
           </figure>
           <figure class="t-card">
             <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">Fast, sharp, and never needed hand-holding. Exactly what a small team needs.</blockquote>
+            <blockquote class="t-card__quote">Snabbt, vasst och utan behov av handpåläggning. Precis vad ett litet team behöver.</blockquote>
             <figcaption class="t-card__meta">Priya Anand — Haven Goods</figcaption>
           </figure>
           <figure class="t-card">
             <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">I've never had a designer just get it this fast.</blockquote>
+            <blockquote class="t-card__quote">Jag har aldrig haft en designer som bara fattar det så här snabbt.</blockquote>
             <figcaption class="t-card__meta">Marco Diallo — Arlo Studio</figcaption>
           </figure>
           <figure class="t-card">
             <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">Editorial, weird in the right ways, exactly on brief.</blockquote>
+            <blockquote class="t-card__quote">Redaktionellt, konstigt på rätt sätt, precis enligt briefen.</blockquote>
             <figcaption class="t-card__meta">Etta Cole — Paloma</figcaption>
           </figure>
           <figure class="t-card">
             <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">They asked better questions about our business than our last three agencies combined.</blockquote>
+            <blockquote class="t-card__quote">De ställde bättre frågor om vår verksamhet än våra tre senaste byråer tillsammans.</blockquote>
             <figcaption class="t-card__meta">Jonas Weir — Kiosk Nine</figcaption>
           </figure>
         </div>
@@ -204,13 +231,13 @@
     <section class="cta" id="contact">
       <canvas id="cta-canvas"></canvas>
       <div class="wrap cta__inner">
-        <p class="eyebrow eyebrow--on-dark">Start a project</p>
-        <h2 class="cta__heading" data-reveal>Let's make something<br />worth screenshotting.</h2>
+        <p class="eyebrow eyebrow--on-dark">Starta ett projekt</p>
+        <h2 class="cta__heading" data-reveal>Låt oss göra något<br />värt att skärmdumpa.</h2>
         <div class="cta__contact">
-          <a class="cta__email" href="mailto:hello@webdesignuf.com">hello@webdesignuf.com</a>
-          <a class="button" href="mailto:hello@webdesignuf.com?subject=New%20project%20inquiry">Book an intro call →</a>
+          <a class="cta__email" href="mailto:Oskar.madjarbjurstomer@jgy.se">Oskar.madjarbjurstomer@jgy.se</a>
+          <a class="button" href="mailto:Oskar.madjarbjurstomer@jgy.se?subject=Nytt%20projekt">Boka ett samtal →</a>
         </div>
-        <p class="cta__note">Usually replies within a day. Sometimes an hour.</p>
+        <p class="cta__note">Svarar oftast inom en dag. Ibland inom en timme.</p>
       </div>
     </section>
 
@@ -221,19 +248,19 @@
       <a href="#top" class="footer__logo">Web Design UF</a>
       <div class="footer__col">
         <span class="footer__label">Studio</span>
-        <a href="#work">Work</a>
-        <a href="#studio">Studio</a>
-        <a href="#contact">Contact</a>
+        <a href="#work">Projekt</a>
+        <a href="#team">Teamet</a>
+        <a href="#contact">Kontakt</a>
       </div>
       <div class="footer__col">
-        <span class="footer__label">Elsewhere</span>
+        <span class="footer__label">Följ oss</span>
         <a href="#" rel="noopener">Instagram</a>
         <a href="#" rel="noopener">LinkedIn</a>
       </div>
     </div>
     <div class="wrap footer__bottom">
-      <span>© 2026 Web Design UF. Built by us, obviously.</span>
-      <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+      <span>© 2026 Web Design UF. Byggt av oss, så klart.</span>
+      <button class="back-to-top" id="back-to-top" aria-label="Till toppen">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 13V1M1 6l6-6 6 6" stroke="currentColor" stroke-width="1.4"/></svg>
       </button>
     </div>

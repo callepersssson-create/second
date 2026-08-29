@@ -230,26 +230,29 @@ export function createStudioScene(canvas) {
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 50);
   camera.position.set(0, 0, 7);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-  const key = new THREE.DirectionalLight(0xfff4e0, 1.1);
+  scene.add(new THREE.AmbientLight(0x362f6b, 0.55));
+  const key = new THREE.DirectionalLight(0xd9e0ff, 1.05);
   key.position.set(3, 4, 5);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x9fb4ff, 0.5);
+  const rim = new THREE.DirectionalLight(0x7c6fff, 0.7);
   rim.position.set(-4, -2, -3);
   scene.add(rim);
 
-  const palette = [0x1e2de0, 0xff4433, 0xdcff4f, 0xf2ecdd];
+  const palette = [0x1e2de0, 0xff4433, 0xdcff4f, 0x7c6fff];
   const group = new THREE.Group();
   const bodies = [];
   const COUNT = 11;
   for (let i = 0; i < COUNT; i++) {
     const radius = 0.35 + Math.random() * 0.55;
+    const color = palette[i % palette.length];
     const geo = new THREE.IcosahedronGeometry(radius, 1);
     const mat = new THREE.MeshStandardMaterial({
-      color: palette[i % palette.length],
+      color,
+      emissive: color,
+      emissiveIntensity: 0.18,
       flatShading: true,
-      roughness: 0.55,
-      metalness: 0.1,
+      roughness: 0.5,
+      metalness: 0.15,
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(
@@ -431,6 +434,93 @@ export function createTileScene(canvas, hue) {
       stopResize();
       stopVisibility();
       renderer.dispose();
+    },
+  };
+}
+
+/* ---------------------------------------------------------------------
+   Starfield — a fixed, page-wide ambient layer of slow drifting motes
+   that shows through every section (they're painted semi-transparent),
+   the thread that ties the whole site to one deep, quiet atmosphere.
+   Plain Canvas2D — cheap enough to sit behind the WebGL scenes above.
+   ------------------------------------------------------------------- */
+export function createStarfield(canvas, { count = 160, reducedMotion = false } = {}) {
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let w = 0;
+  let h = 0;
+  const palette = ["242,236,221", "168,158,255", "220,255,120"];
+  const weights = [0.72, 0.18, 0.1];
+
+  function pickColor() {
+    const r = Math.random();
+    let acc = 0;
+    for (let i = 0; i < weights.length; i++) {
+      acc += weights[i];
+      if (r <= acc) return palette[i];
+    }
+    return palette[0];
+  }
+
+  const motes = Array.from({ length: count }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: Math.random() * 1.3 + 0.3,
+    depth: Math.random() * 0.5 + 0.15,
+    phase: Math.random() * Math.PI * 2,
+    speed: Math.random() * 0.4 + 0.15,
+    color: pickColor(),
+  }));
+
+  function resize() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  let scrollY = 0;
+  let raf = null;
+
+  function paint(time) {
+    ctx.clearRect(0, 0, w, h);
+    motes.forEach((m) => {
+      const twinkle = reducedMotion ? 0.5 : 0.35 + 0.65 * Math.abs(Math.sin(time * m.speed + m.phase));
+      const baseY = m.y * h;
+      const parallax = (scrollY * m.depth * 0.12) % (h + 60);
+      let y = baseY - parallax;
+      if (y < -30) y += h + 60;
+      if (y > h + 30) y -= h + 60;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${m.color}, ${(0.08 + 0.5 * twinkle).toFixed(3)})`;
+      ctx.arc(m.x * w, y, m.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function tick(t) {
+    raf = requestAnimationFrame(tick);
+    paint(t * 0.001);
+  }
+
+  if (reducedMotion) {
+    paint(0);
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  return {
+    setScrollY(y) {
+      scrollY = y;
+    },
+    destroy() {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
     },
   };
 }
