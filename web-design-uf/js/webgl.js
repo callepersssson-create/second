@@ -221,8 +221,10 @@ export function createBlobScene(canvas, { colorA, colorB, colorC, seed = 0, mous
 }
 
 /* ---------------------------------------------------------------------
-   StudioScene — a small faceted 3D cluster standing in for "the team":
-   real geometry, real lighting, gentle orbiting drift + pointer parallax.
+   StudioScene — a single smooth, glossy torus knot in a flowing brand
+   gradient: real geometry, real lighting, a slow hypnotic tumble +
+   pointer parallax. Built to catch the eye without competing with the
+   liquid-shader system used everywhere else.
    ------------------------------------------------------------------- */
 export function createStudioScene(canvas) {
   const renderer = makeRenderer(canvas);
@@ -231,45 +233,41 @@ export function createStudioScene(canvas) {
   camera.position.set(0, 0, 7);
 
   scene.add(new THREE.AmbientLight(0x362f6b, 0.55));
-  const key = new THREE.DirectionalLight(0xd9e0ff, 1.05);
+  const key = new THREE.DirectionalLight(0xd9e0ff, 1.15);
   key.position.set(3, 4, 5);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x7c6fff, 0.7);
+  const rim = new THREE.DirectionalLight(0x7c6fff, 0.9);
   rim.position.set(-4, -2, -3);
   scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xdcff4f, 0.4);
+  fill.position.set(0, -3, 4);
+  scene.add(fill);
 
-  const palette = [0x1e2de0, 0xff4433, 0xdcff4f, 0x7c6fff];
-  const group = new THREE.Group();
-  const bodies = [];
-  const COUNT = 11;
-  for (let i = 0; i < COUNT; i++) {
-    const radius = 0.35 + Math.random() * 0.55;
-    const color = palette[i % palette.length];
-    const geo = new THREE.IcosahedronGeometry(radius, 1);
-    const mat = new THREE.MeshStandardMaterial({
-      color,
-      emissive: color,
-      emissiveIntensity: 0.18,
-      flatShading: true,
-      roughness: 0.5,
-      metalness: 0.15,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(
-      (Math.random() - 0.5) * 4.6,
-      (Math.random() - 0.5) * 3.2,
-      (Math.random() - 0.5) * 2.6
-    );
-    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-    group.add(mesh);
-    bodies.push({
-      mesh,
-      spin: (Math.random() - 0.5) * 0.35,
-      phase: Math.random() * Math.PI * 2,
-      floatAmp: 0.12 + Math.random() * 0.18,
-    });
+  const geometry = new THREE.TorusKnotGeometry(1.15, 0.36, 260, 40, 2, 3);
+  const colorA = new THREE.Color(0x1e2de0);
+  const colorB = new THREE.Color(0x7c6fff);
+  const colorC = new THREE.Color(0xdcff4f);
+  const positions = geometry.attributes.position;
+  const colors = new Float32Array(positions.count * 3);
+  for (let i = 0; i < positions.count; i++) {
+    const t = i / positions.count;
+    const mixed = t < 0.5 ? colorA.clone().lerp(colorB, t * 2) : colorB.clone().lerp(colorC, (t - 0.5) * 2);
+    colors[i * 3] = mixed.r;
+    colors[i * 3 + 1] = mixed.g;
+    colors[i * 3 + 2] = mixed.b;
   }
-  scene.add(group);
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+  const material = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    roughness: 0.26,
+    metalness: 0.4,
+    clearcoat: 0.65,
+    clearcoatRoughness: 0.3,
+  });
+
+  const knot = new THREE.Mesh(geometry, material);
+  scene.add(knot);
 
   const mouseTarget = new THREE.Vector2(0, 0);
   canvas.parentElement.addEventListener(
@@ -303,15 +301,12 @@ export function createStudioScene(canvas) {
     raf = requestAnimationFrame(tick);
     if (!visible) return;
     const time = t * 0.001;
-    group.rotation.y = time * 0.08;
+    knot.rotation.x = time * 0.2;
+    knot.rotation.y = time * 0.28;
+    knot.position.y = Math.sin(time * 0.5) * 0.12;
     camera.position.x += (mouseTarget.x * 1.2 - camera.position.x) * 0.04;
     camera.position.y += (-mouseTarget.y * 0.8 - camera.position.y) * 0.04;
     camera.lookAt(0, 0, 0);
-    bodies.forEach((b) => {
-      b.mesh.rotation.x += b.spin * 0.01;
-      b.mesh.rotation.y += b.spin * 0.014;
-      b.mesh.position.y += Math.sin(time * 0.6 + b.phase) * 0.0015 * b.floatAmp * 10;
-    });
     renderer.render(scene, camera);
   }
   raf = requestAnimationFrame(tick);
@@ -321,6 +316,8 @@ export function createStudioScene(canvas) {
       cancelAnimationFrame(raf);
       stopResize();
       stopVisibility();
+      geometry.dispose();
+      material.dispose();
       renderer.dispose();
     },
   };
