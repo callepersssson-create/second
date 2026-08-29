@@ -521,3 +521,108 @@ export function createStarfield(canvas, { count = 160, reducedMotion = false } =
     },
   };
 }
+
+/* ---------------------------------------------------------------------
+   GemScene — a smooth, glossy floating solid with a flowing vertex-color
+   gradient. Generalized version of the studio torus knot so hero and
+   CTA can each get their own distinct shape from the same recipe,
+   bookending the page with a second, varied 3D motif.
+   ------------------------------------------------------------------- */
+export function createGemScene(canvas, { geometry, colorA, colorB, colorC, rotSpeedX = 0.18, rotSpeedY = 0.24, floatAmp = 0.14 }) {
+  const renderer = makeRenderer(canvas);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 50);
+  camera.position.set(0, 0, 6.5);
+
+  scene.add(new THREE.AmbientLight(0x362f6b, 0.5));
+  const key = new THREE.DirectionalLight(0xd9e0ff, 1.2);
+  key.position.set(3, 4, 5);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x7c6fff, 0.9);
+  rim.position.set(-4, -1, -3);
+  scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xdcff4f, 0.35);
+  fill.position.set(-1, -3, 4);
+  scene.add(fill);
+
+  geometry.computeBoundingSphere();
+  const radius = geometry.boundingSphere.radius || 1;
+  const cA = new THREE.Color(colorA);
+  const cB = new THREE.Color(colorB);
+  const cC = new THREE.Color(colorC);
+  const positions = geometry.attributes.position;
+  const colors = new Float32Array(positions.count * 3);
+  for (let i = 0; i < positions.count; i++) {
+    const y = (positions.getY(i) / radius) * 0.5 + 0.5;
+    const t = Math.min(1, Math.max(0, y));
+    const mixed = t < 0.5 ? cA.clone().lerp(cB, t * 2) : cB.clone().lerp(cC, (t - 0.5) * 2);
+    colors[i * 3] = mixed.r;
+    colors[i * 3 + 1] = mixed.g;
+    colors[i * 3 + 2] = mixed.b;
+  }
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+  const material = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    roughness: 0.22,
+    metalness: 0.35,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.25,
+  });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  const mouseTarget = new THREE.Vector2(0, 0);
+  canvas.parentElement.addEventListener(
+    "pointermove",
+    (e) => {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      mouseTarget.set(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        ((e.clientY - rect.top) / rect.height) * 2 - 1
+      );
+    },
+    { passive: true }
+  );
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(1, Math.floor(rect.width));
+    const h = Math.max(1, Math.floor(rect.height));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  const stopResize = observeResize(canvas, resize);
+
+  let visible = true;
+  const stopVisibility = observeVisibility(canvas, (v) => (visible = v));
+
+  let raf = null;
+  function tick(t) {
+    raf = requestAnimationFrame(tick);
+    if (!visible) return;
+    const time = t * 0.001;
+    mesh.rotation.x = time * rotSpeedX;
+    mesh.rotation.y = time * rotSpeedY;
+    mesh.position.y = Math.sin(time * 0.45) * floatAmp;
+    camera.position.x += (mouseTarget.x * 0.7 - camera.position.x) * 0.03;
+    camera.position.y += (-mouseTarget.y * 0.5 - camera.position.y) * 0.03;
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+  }
+  raf = requestAnimationFrame(tick);
+
+  return {
+    destroy() {
+      cancelAnimationFrame(raf);
+      stopResize();
+      stopVisibility();
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    },
+  };
+}

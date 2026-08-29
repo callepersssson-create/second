@@ -1,4 +1,5 @@
-import { createBlobScene, createStudioScene, createTileScene, createStarfield } from "./webgl.js";
+import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene } from "./webgl.js";
+import * as THREE from "../vendor/three.module.min.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -150,6 +151,32 @@ const testimonialsScene = testimonialsCanvas
 const studioCanvas = document.getElementById("studio-canvas");
 const studioScene = studioCanvas ? createStudioScene(studioCanvas) : null;
 
+const heroGemCanvas = document.getElementById("hero-gem-canvas");
+const heroGemScene = heroGemCanvas
+  ? createGemScene(heroGemCanvas, {
+      geometry: new THREE.IcosahedronGeometry(1.4, 4),
+      colorA: "#1e2de0",
+      colorB: "#7c6fff",
+      colorC: "#dcff4f",
+      rotSpeedX: 0.12,
+      rotSpeedY: 0.18,
+      floatAmp: 0.18,
+    })
+  : null;
+
+const ctaGemCanvas = document.getElementById("cta-gem-canvas");
+const ctaGemScene = ctaGemCanvas
+  ? createGemScene(ctaGemCanvas, {
+      geometry: new THREE.TorusGeometry(1.15, 0.32, 48, 128),
+      colorA: "#dcff4f",
+      colorB: "#11167a",
+      colorC: "#7c6fff",
+      rotSpeedX: 0.2,
+      rotSpeedY: 0.14,
+      floatAmp: 0.14,
+    })
+  : null;
+
 const tileScenes = [];
 document.querySelectorAll(".tile").forEach((tile) => {
   const canvas = tile.querySelector(".tile__canvas");
@@ -183,6 +210,30 @@ document.querySelectorAll(".tile").forEach((tile) => {
     gsap.to(tile, { rotateX: 0, rotateY: 0, duration: 0.6, ease: "power3.out" });
   });
 });
+
+/* ------------------------------------------------------------------ */
+/* 3D tilt on the team and testimonial cards                            */
+/* ------------------------------------------------------------------ */
+if (supportsHover && !prefersReduced) {
+  document.querySelectorAll(".member, .t-card").forEach((card) => {
+    card.addEventListener("pointermove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      gsap.to(card, {
+        rotateX: (0.5 - y) * 8,
+        rotateY: (x - 0.5) * -8,
+        scale: 1.015,
+        transformPerspective: 800,
+        duration: 0.4,
+        ease: "power3.out",
+      });
+    });
+    card.addEventListener("pointerleave", () => {
+      gsap.to(card, { rotateX: 0, rotateY: 0, scale: 1, duration: 0.6, ease: "power3.out" });
+    });
+  });
+}
 
 /* ------------------------------------------------------------------ */
 /* Boot sequence                                                       */
@@ -345,6 +396,8 @@ window.addEventListener("beforeunload", () => {
   if (teamScene) teamScene.destroy();
   if (testimonialsScene) testimonialsScene.destroy();
   if (studioScene) studioScene.destroy();
+  if (heroGemScene) heroGemScene.destroy();
+  if (ctaGemScene) ctaGemScene.destroy();
   tileScenes.forEach((s) => s.destroy());
   starfield.destroy();
 });
