@@ -65,10 +65,7 @@
       </div>
 
       <div class="marquee" aria-hidden="true">
-        <div class="marquee__track">
-          <span>Design — Utveckling — Lansering — Upprepa — Aldrig några mallar — </span>
-          <span>Design — Utveckling — Lansering — Upprepa — Aldrig några mallar — </span>
-        </div>
+        <p class="marquee__line">Design — Utveckling — Lansering — Upprepa — Aldrig några mallar</p>
       </div>
     </header>
 
@@ -113,8 +110,23 @@
             <div class="service-panel__grid">
               <div>
                 <h2 class="service-panel__heading">Skärmar vi är<br />stolta över.</h2>
-                <p class="service-panel__body">Ett urval av sajter vi nyligen levererat — varumärken, butiker och menyer som äntligen ser lika bra ut som de fungerar.</p>
-                <canvas id="screens-canvas" class="screens-canvas" aria-hidden="true"></canvas>
+                <p class="service-panel__body">Ett urval av sajter vi nyligen levererat — varumärken, butiker och menyer som äntligen ser lika bra ut som de fungerar. Varje gren i trädet nedan är ett uppdrag, datumstämplat den dag det gick i luften. För muspekaren över trädet för att resa genom tidslinjen.</p>
+                <div class="tree-visual">
+                  <canvas id="tree-canvas" aria-hidden="true"></canvas>
+                  <div class="tree-caption" id="tree-caption">
+                    <span class="tree-caption__date"></span>
+                    <span class="tree-caption__name"></span>
+                    <span class="tree-caption__tag"></span>
+                    <a class="tree-caption__link" target="_blank" rel="noopener noreferrer" hidden>Besök sajten →</a>
+                  </div>
+                  <script type="application/json" id="tree-data">
+                    [
+                      { "name": "45ans Pizzeria & Restaurant", "tag": "Pizzeria — Webb", "dateLabel": "Februari 2026", "href": "https://claude.ai/code/artifact/58e542e9-137a-4f11-a926-302b85b93e8e" },
+                      { "name": "Pizzeria Esila", "tag": "Pizzeria — Webb", "dateLabel": "Maj 2026", "href": "https://claude.ai/code/artifact/69d49f33-61fe-45cc-b9b7-6f20e02a16d5" },
+                      { "name": "Nästa uppdrag", "tag": "Din sajt?", "dateLabel": "Snart", "href": "#contact" }
+                    ]
+                  </script>
+                </div>
               </div>
               <div class="tile-grid">
                 <a class="tile" href="https://claude.ai/code/artifact/58e542e9-137a-4f11-a926-302b85b93e8e" target="_blank" rel="noopener noreferrer" data-hue="coral">

@@ -1,4 +1,4 @@
-import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createScreensScene } from "./webgl.js";
+import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createTreeScene } from "./webgl.js";
 import * as THREE from "../vendor/three.module.min.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -177,8 +177,43 @@ const ctaGemScene = ctaGemCanvas
     })
   : null;
 
-const screensCanvas = document.getElementById("screens-canvas");
-const screensScene = screensCanvas ? createScreensScene(screensCanvas) : null;
+const treeCanvas = document.getElementById("tree-canvas");
+const treeCaption = document.getElementById("tree-caption");
+const treeDataEl = document.getElementById("tree-data");
+let treeScene = null;
+if (treeCanvas && treeCaption && treeDataEl) {
+  const projects = JSON.parse(treeDataEl.textContent);
+  const renderCaption = (project) => {
+    if (!project) {
+      treeCaption.classList.remove("is-active");
+      return;
+    }
+    treeCaption.classList.add("is-active");
+    treeCaption.querySelector(".tree-caption__date").textContent = project.dateLabel;
+    treeCaption.querySelector(".tree-caption__name").textContent = project.name;
+    treeCaption.querySelector(".tree-caption__tag").textContent = project.tag;
+    const link = treeCaption.querySelector(".tree-caption__link");
+    if (project.href) {
+      link.href = project.href;
+      link.target = project.href.startsWith("#") ? "_self" : "_blank";
+      link.hidden = false;
+    } else {
+      link.hidden = true;
+    }
+  };
+  renderCaption(projects[0]);
+  treeScene = createTreeScene(treeCanvas, projects, { onActive: (project) => renderCaption(project || projects[0]) });
+
+  treeCaption.querySelector(".tree-caption__link").addEventListener("click", (e) => {
+    const href = e.currentTarget.getAttribute("href") || "";
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (!target) return;
+    if (lenis) lenis.scrollTo(target, { offset: 0 });
+    else target.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth" });
+  });
+}
 
 const tileScenes = [];
 document.querySelectorAll(".tile").forEach((tile) => {
@@ -297,15 +332,6 @@ gsap.utils.toArray(".stat").forEach((el, i) => {
 });
 
 /* ------------------------------------------------------------------ */
-/* Marquee                                                             */
-/* ------------------------------------------------------------------ */
-if (!prefersReduced) {
-  gsap.to(".marquee__track", { xPercent: -50, duration: 16, ease: "none", repeat: -1 });
-} else {
-  document.querySelector(".marquee__track").style.transform = "none";
-}
-
-/* ------------------------------------------------------------------ */
 /* Services — pinned horizontal index                                   */
 /* ------------------------------------------------------------------ */
 const servicesTrack = document.querySelector(".services__track");
@@ -401,7 +427,7 @@ window.addEventListener("beforeunload", () => {
   if (studioScene) studioScene.destroy();
   if (heroGemScene) heroGemScene.destroy();
   if (ctaGemScene) ctaGemScene.destroy();
-  if (screensScene) screensScene.destroy();
+  if (treeScene) treeScene.destroy();
   tileScenes.forEach((s) => s.destroy());
   starfield.destroy();
 });

@@ -737,105 +737,121 @@ export function createGemScene(canvas, { geometry, colorA, colorB, colorC, rotSp
 }
 
 /* ---------------------------------------------------------------------
-   ScreensScene — a small fanned stack of glossy browser windows, the
-   one 3D moment that points at the actual craft (screens, layout,
-   content) instead of pure abstraction. Lives in the "work" panel.
+   TreeScene — each branch is one project we've shipped, placed along a
+   horizontal trunk in chronological order. Hovering scrubs a camera
+   dolly along that timeline: the branches near the pointer's time
+   light up and the camera pushes in on them, while the rest recede.
+   Lives in the "work" panel.
    ------------------------------------------------------------------- */
-function makeScreenTexture({ chrome, panel, accent, lines }) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 340;
-  const ctx = canvas.getContext("2d");
-  const r = 26;
-
-  ctx.fillStyle = panel;
-  ctx.beginPath();
-  ctx.roundRect(0, 0, 512, 340, r);
-  ctx.fill();
-
-  ctx.fillStyle = chrome;
-  ctx.beginPath();
-  ctx.roundRect(0, 0, 512, 54, [r, r, 0, 0]);
-  ctx.fill();
-
-  ["#ff4433", "#dcff4f", "#7c6fff"].forEach((c, i) => {
-    ctx.beginPath();
-    ctx.fillStyle = c;
-    ctx.arc(30 + i * 26, 27, 6, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  ctx.fillStyle = accent;
-  ctx.globalAlpha = 0.95;
-  ctx.beginPath();
-  ctx.roundRect(36, 90, 210, 28, 6);
-  ctx.fill();
-
-  ctx.globalAlpha = 0.28;
-  lines.forEach((w, i) => {
-    ctx.beginPath();
-    ctx.roundRect(36, 146 + i * 30, w, 12, 6);
-    ctx.fill();
-  });
-  ctx.globalAlpha = 1;
-
-  return canvas;
-}
-
-export function createScreensScene(canvas) {
+export function createTreeScene(canvas, projects, { onActive } = {}) {
   const renderer = makeRenderer(canvas);
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
-  camera.position.set(0, 0, 6.5);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
 
   addWheelLighting(scene);
 
-  const screens = [
-    { chrome: "#151d6b", panel: "#0d1352", accent: "#a9b8ff", lines: [420, 360, 300], x: -0.55, y: -0.22, z: -0.35, rot: -0.16 },
-    { chrome: "#1a2680", panel: "#101960", accent: "#dcff4f", lines: [400, 340, 380], x: 0, y: 0.05, z: 0, rot: 0.02 },
-    { chrome: "#222f9c", panel: "#141d70", accent: "#8fa3ff", lines: [380, 420, 320], x: 0.55, y: 0.22, z: 0.35, rot: 0.18 },
-  ];
+  const trunkLength = 4.4;
+  const trunkGeo = new THREE.CylinderGeometry(0.055, 0.16, trunkLength, 18);
+  trunkGeo.rotateZ(Math.PI / 2);
+  const trunkMat = new THREE.MeshPhysicalMaterial({ color: 0x0d1352, roughness: 0.42, metalness: 0.3, clearcoat: 0.4 });
+  const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+  scene.add(trunk);
 
-  const group = new THREE.Group();
-  const geometries = [];
-  const materials = [];
-  const textures = [];
+  const palette = [0x1e2de0, 0xff4433, 0x7c6fff, 0x5a72ff];
+  const geometries = [trunkGeo];
+  const materials = [trunkMat];
+  const branches = [];
 
-  screens.forEach((s) => {
-    const canvasTex = makeScreenTexture(s);
-    const texture = new THREE.CanvasTexture(canvasTex);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const geo = new THREE.PlaneGeometry(1.9, 1.26);
-    const mat = new THREE.MeshPhysicalMaterial({
-      map: texture,
-      transparent: true,
-      roughness: 0.3,
-      metalness: 0.15,
-      clearcoat: 0.55,
-      clearcoatRoughness: 0.3,
+  const list = projects.length ? projects : [{ name: "Nästa projekt", dateLabel: "", href: "#" }];
+  const n = list.length;
+
+  list.forEach((project, i) => {
+    const t = n > 1 ? i / (n - 1) : 0.5;
+    project.t = t;
+    const baseX = (t - 0.5) * trunkLength;
+    const dirUp = i % 2 === 0 ? 1 : -1;
+    const branchLen = 1.05 + (i % 3) * 0.1;
+    const dir = new THREE.Vector3((Math.random() - 0.5) * 0.35, dirUp, (Math.random() - 0.5) * 0.45).normalize();
+    const base = new THREE.Vector3(baseX, 0.05 * dirUp, 0);
+    const mid = base.clone().addScaledVector(dir, branchLen / 2);
+    const tip = base.clone().addScaledVector(dir, branchLen);
+    const color = palette[i % palette.length];
+
+    const branchGeo = new THREE.CylinderGeometry(0.02, 0.055, branchLen, 10);
+    const branchMat = new THREE.MeshPhysicalMaterial({ color, roughness: 0.35, metalness: 0.35, clearcoat: 0.5 });
+    const branch = new THREE.Mesh(branchGeo, branchMat);
+    branch.position.copy(mid);
+    branch.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    scene.add(branch);
+
+    const budGeo = new THREE.SphereGeometry(0.1, 20, 20);
+    const budMat = new THREE.MeshPhysicalMaterial({
+      color,
+      emissive: color,
+      emissiveIntensity: 0.25,
+      roughness: 0.25,
+      metalness: 0.3,
+      clearcoat: 0.6,
     });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(s.x, s.y, s.z);
-    mesh.rotation.z = s.rot;
-    group.add(mesh);
-    geometries.push(geo);
-    materials.push(mat);
-    textures.push(texture);
-  });
-  scene.add(group);
+    const bud = new THREE.Mesh(budGeo, budMat);
+    bud.position.copy(tip);
+    scene.add(bud);
 
-  const mouseTarget = new THREE.Vector2(0, 0);
+    geometries.push(branchGeo, budGeo);
+    materials.push(branchMat, budMat);
+    branches.push({ project, bud, mat: budMat, scale: 1 });
+  });
+
+  // Decorative, non-interactive twigs — fill out the silhouette so the
+  // structure reads as a tree rather than a bare timeline of nodes.
+  const twigCount = 9;
+  for (let i = 0; i < twigCount; i++) {
+    const t = (i + 0.5) / twigCount;
+    const baseX = (t - 0.5) * trunkLength;
+    const dirUp = i % 2 === 0 ? 1 : -1;
+    const twigLen = 0.4 + ((i * 37) % 5) * 0.05;
+    const dir = new THREE.Vector3(((i * 53) % 7) / 7 - 0.5, dirUp * (0.75 + ((i * 17) % 4) * 0.06), ((i * 29) % 5) / 5 - 0.5).normalize();
+    const base = new THREE.Vector3(baseX, 0.04 * dirUp, ((i * 11) % 5) / 5 - 0.4);
+    const mid = base.clone().addScaledVector(dir, twigLen / 2);
+
+    const twigGeo = new THREE.CylinderGeometry(0.008, 0.026, twigLen, 8);
+    const twigMat = new THREE.MeshPhysicalMaterial({ color: 0x1c2560, roughness: 0.5, metalness: 0.25, clearcoat: 0.3 });
+    const twig = new THREE.Mesh(twigGeo, twigMat);
+    twig.position.copy(mid);
+    twig.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+    scene.add(twig);
+
+    geometries.push(twigGeo);
+    materials.push(twigMat);
+  }
+
+  let hoverT = null;
+  function pickNearest(nx) {
+    let nearest = branches[0];
+    let best = Infinity;
+    branches.forEach((b) => {
+      const d = Math.abs(b.project.t - nx);
+      if (d < best) {
+        best = d;
+        nearest = b;
+      }
+    });
+    return nearest;
+  }
+
   canvas.parentElement.addEventListener(
     "pointermove",
     (e) => {
       const rect = canvas.getBoundingClientRect();
-      mouseTarget.set(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        ((e.clientY - rect.top) / rect.height) * 2 - 1
-      );
+      hoverT = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      if (onActive) onActive(pickNearest(hoverT).project);
     },
     { passive: true }
   );
+  canvas.parentElement.addEventListener("pointerleave", () => {
+    hoverT = null;
+    if (onActive) onActive(null);
+  });
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
@@ -851,16 +867,29 @@ export function createScreensScene(canvas) {
   let visible = true;
   const stopVisibility = observeVisibility(canvas, (v) => (visible = v));
 
+  camera.position.set(0, 0.35, 4.8);
+
   let raf = null;
   function tick(t) {
     raf = requestAnimationFrame(tick);
     if (!visible) return;
     const time = t * 0.001;
-    group.rotation.y = Math.sin(time * 0.25) * 0.35;
-    group.position.y = Math.sin(time * 0.4) * 0.08;
-    camera.position.x += (mouseTarget.x * 0.8 - camera.position.x) * 0.04;
-    camera.position.y += (-mouseTarget.y * 0.5 - camera.position.y) * 0.04;
-    camera.lookAt(0, 0, 0);
+    const targetX = hoverT !== null ? (hoverT - 0.5) * trunkLength * 0.85 : 0;
+    const targetZ = hoverT !== null ? 3.1 : 4.8;
+    camera.position.x += (targetX - camera.position.x) * 0.06;
+    camera.position.z += (targetZ - camera.position.z) * 0.06;
+    camera.position.y = 0.35 + Math.sin(time * 0.3) * 0.04;
+    camera.lookAt(camera.position.x, 0.15, 0);
+    trunk.rotation.x = Math.sin(time * 0.2) * 0.015;
+
+    branches.forEach((b) => {
+      const active = hoverT !== null && Math.abs(b.project.t - hoverT) < 0.5 / n;
+      const targetScale = active ? 1.4 : 1;
+      b.scale += (targetScale - b.scale) * 0.12;
+      b.bud.scale.setScalar(b.scale);
+      b.mat.emissiveIntensity += ((active ? 0.95 : 0.25) - b.mat.emissiveIntensity) * 0.12;
+    });
+
     renderer.render(scene, camera);
   }
   raf = requestAnimationFrame(tick);
@@ -872,7 +901,6 @@ export function createScreensScene(canvas) {
       stopVisibility();
       geometries.forEach((g) => g.dispose());
       materials.forEach((m) => m.dispose());
-      textures.forEach((t) => t.dispose());
       renderer.dispose();
     },
   };
