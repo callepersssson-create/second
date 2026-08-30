@@ -446,26 +446,6 @@ body:not(.has-custom-cursor) .cursor {
   50% { transform: translateY(6px); }
 }
 
-/* ---------- marquee ---------- */
-
-.marquee {
-  position: relative;
-  z-index: 2;
-  background: var(--coral);
-  color: var(--ink);
-  border-top: 1px solid var(--on-dark-line);
-  padding: 1.1rem var(--gutter);
-  text-align: center;
-}
-
-.marquee__line {
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
 /* ---------- manifesto ---------- */
 
 .manifesto {
@@ -652,7 +632,7 @@ body:not(.has-custom-cursor) .cursor {
   height: min(78vh, 42rem);
 }
 
-.tree-visual {
+.timeline-visual {
   position: relative;
   width: 100%;
   height: min(22rem, 34vh);
@@ -662,14 +642,14 @@ body:not(.has-custom-cursor) .cursor {
   background: radial-gradient(120% 140% at 20% 20%, rgba(30, 45, 224, 0.18), transparent 60%);
 }
 
-#tree-canvas {
+#timeline-canvas {
   display: block;
   width: 100%;
   height: 100%;
   cursor: pointer;
 }
 
-.tree-caption {
+.timeline-caption {
   position: absolute;
   left: 1.1rem;
   right: 1.1rem;
@@ -691,13 +671,13 @@ body:not(.has-custom-cursor) .cursor {
   pointer-events: none;
 }
 
-.tree-caption.is-active {
+.timeline-caption.is-active {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
-.tree-caption__date {
+.timeline-caption__date {
   font-family: var(--font-body);
   font-size: 0.68rem;
   font-weight: 600;
@@ -706,20 +686,20 @@ body:not(.has-custom-cursor) .cursor {
   color: var(--lime);
 }
 
-.tree-caption__name {
+.timeline-caption__name {
   font-family: var(--font-display);
   font-style: italic;
   font-size: 1.15rem;
   color: var(--on-dark);
 }
 
-.tree-caption__tag {
+.timeline-caption__tag {
   font-family: var(--font-body);
   font-size: 0.72rem;
   color: var(--on-dark-soft);
 }
 
-.tree-caption__link {
+.timeline-caption__link {
   font-family: var(--font-body);
   font-size: 0.75rem;
   font-weight: 600;
@@ -730,7 +710,7 @@ body:not(.has-custom-cursor) .cursor {
 }
 
 @media (max-width: 900px) {
-  .tree-visual {
+  .timeline-visual {
     display: none;
   }
 }
@@ -919,98 +899,6 @@ body:not(.has-custom-cursor) .cursor {
 
 .member__email:hover {
   color: var(--lime);
-}
-
-/* ---------- testimonials ---------- */
-
-.testimonials {
-  position: relative;
-  background: var(--void);
-  overflow: hidden;
-}
-
-#testimonials-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  opacity: 0.45;
-}
-
-.testimonials__head {
-  position: relative;
-  z-index: 1;
-  padding-top: var(--section-pad);
-  padding-bottom: 2.5rem;
-}
-
-.testimonials__viewport {
-  position: relative;
-  z-index: 1;
-  height: 74vh;
-  min-height: 26rem;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-}
-
-.testimonials__track {
-  display: flex;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
-  padding-left: var(--gutter);
-  will-change: transform;
-}
-
-.t-card {
-  flex: none;
-  width: min(26rem, 78vw);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  padding: clamp(1.75rem, 3vw, 2.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.t-card:nth-child(even) {
-  transform: rotate(-0.6deg);
-}
-
-.t-card:nth-child(odd) {
-  transform: rotate(0.5deg);
-}
-
-.t-card__mark {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 3.5rem;
-  line-height: 0.6;
-  color: var(--coral);
-}
-
-.t-card__quote {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: var(--fs-h3);
-  line-height: 1.3;
-  flex: 1;
-}
-
-.t-card__meta {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--on-dark-soft);
-  border-top: 1px solid var(--on-dark-line);
-  padding-top: 1rem;
-}
-
-.testimonials__foot {
-  padding-bottom: var(--section-pad);
 }
 
 /* ---------- cta ---------- */

@@ -737,103 +737,76 @@ export function createGemScene(canvas, { geometry, colorA, colorB, colorC, rotSp
 }
 
 /* ---------------------------------------------------------------------
-   TreeScene — each branch is one project we've shipped, placed along a
-   horizontal trunk in chronological order. Hovering scrubs a camera
-   dolly along that timeline: the branches near the pointer's time
-   light up and the camera pushes in on them, while the rest recede.
-   Lives in the "work" panel.
+   TimelineScene — a plain 3D axis anchored at today. Each project sits
+   at its real calendar position between the earliest launch and now;
+   hovering scrubs a camera dolly along the line and highlights the
+   nearest node. Lives in the "work" panel.
    ------------------------------------------------------------------- */
-export function createTreeScene(canvas, projects, { onActive } = {}) {
+export function createTimelineScene(canvas, items, { onActive } = {}) {
   const renderer = makeRenderer(canvas);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50);
 
   addWheelLighting(scene);
 
-  const trunkLength = 4.4;
-  const trunkGeo = new THREE.CylinderGeometry(0.055, 0.16, trunkLength, 18);
-  trunkGeo.rotateZ(Math.PI / 2);
-  const trunkMat = new THREE.MeshPhysicalMaterial({ color: 0x0d1352, roughness: 0.42, metalness: 0.3, clearcoat: 0.4 });
-  const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-  scene.add(trunk);
+  const lineLength = 4.4;
+  const lineGeo = new THREE.CylinderGeometry(0.045, 0.045, lineLength, 16);
+  lineGeo.rotateZ(Math.PI / 2);
+  const lineMat = new THREE.MeshPhysicalMaterial({ color: 0x1e2de0, roughness: 0.35, metalness: 0.35, clearcoat: 0.55 });
+  const line = new THREE.Mesh(lineGeo, lineMat);
+  scene.add(line);
+
+  const geometries = [lineGeo];
+  const materials = [lineMat];
+
+  const tickCount = 14;
+  for (let i = 0; i <= tickCount; i++) {
+    const x = (i / tickCount - 0.5) * lineLength;
+    const tickGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 6);
+    const tickMat = new THREE.MeshBasicMaterial({ color: 0x3b48c9, transparent: true, opacity: 0.5 });
+    const tick = new THREE.Mesh(tickGeo, tickMat);
+    tick.position.set(x, 0, 0);
+    scene.add(tick);
+    geometries.push(tickGeo);
+    materials.push(tickMat);
+  }
 
   const palette = [0x1e2de0, 0xff4433, 0x7c6fff, 0x5a72ff];
-  const geometries = [trunkGeo];
-  const materials = [trunkMat];
-  const branches = [];
+  const nodes = [];
 
-  const list = projects.length ? projects : [{ name: "Nästa projekt", dateLabel: "", href: "#" }];
-  const n = list.length;
+  items.forEach((item, i) => {
+    const x = (item.t - 0.5) * lineLength;
+    const color = item.isToday ? 0xdcff4f : palette[i % palette.length];
+    const size = item.isToday ? 0.135 : 0.1;
+    const baseEmissive = item.isToday ? 0.6 : 0.25;
 
-  list.forEach((project, i) => {
-    const t = n > 1 ? i / (n - 1) : 0.5;
-    project.t = t;
-    const baseX = (t - 0.5) * trunkLength;
-    const dirUp = i % 2 === 0 ? 1 : -1;
-    const branchLen = 1.05 + (i % 3) * 0.1;
-    const dir = new THREE.Vector3((Math.random() - 0.5) * 0.35, dirUp, (Math.random() - 0.5) * 0.45).normalize();
-    const base = new THREE.Vector3(baseX, 0.05 * dirUp, 0);
-    const mid = base.clone().addScaledVector(dir, branchLen / 2);
-    const tip = base.clone().addScaledVector(dir, branchLen);
-    const color = palette[i % palette.length];
-
-    const branchGeo = new THREE.CylinderGeometry(0.02, 0.055, branchLen, 10);
-    const branchMat = new THREE.MeshPhysicalMaterial({ color, roughness: 0.35, metalness: 0.35, clearcoat: 0.5 });
-    const branch = new THREE.Mesh(branchGeo, branchMat);
-    branch.position.copy(mid);
-    branch.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-    scene.add(branch);
-
-    const budGeo = new THREE.SphereGeometry(0.1, 20, 20);
-    const budMat = new THREE.MeshPhysicalMaterial({
+    const nodeGeo = new THREE.SphereGeometry(size, 22, 22);
+    const nodeMat = new THREE.MeshPhysicalMaterial({
       color,
       emissive: color,
-      emissiveIntensity: 0.25,
+      emissiveIntensity: baseEmissive,
       roughness: 0.25,
       metalness: 0.3,
       clearcoat: 0.6,
     });
-    const bud = new THREE.Mesh(budGeo, budMat);
-    bud.position.copy(tip);
-    scene.add(bud);
+    const node = new THREE.Mesh(nodeGeo, nodeMat);
+    node.position.set(x, 0, 0);
+    scene.add(node);
 
-    geometries.push(branchGeo, budGeo);
-    materials.push(branchMat, budMat);
-    branches.push({ project, bud, mat: budMat, scale: 1 });
+    geometries.push(nodeGeo);
+    materials.push(nodeMat);
+    nodes.push({ item, node, mat: nodeMat, scale: 1, baseEmissive });
   });
-
-  // Decorative, non-interactive twigs — fill out the silhouette so the
-  // structure reads as a tree rather than a bare timeline of nodes.
-  const twigCount = 9;
-  for (let i = 0; i < twigCount; i++) {
-    const t = (i + 0.5) / twigCount;
-    const baseX = (t - 0.5) * trunkLength;
-    const dirUp = i % 2 === 0 ? 1 : -1;
-    const twigLen = 0.4 + ((i * 37) % 5) * 0.05;
-    const dir = new THREE.Vector3(((i * 53) % 7) / 7 - 0.5, dirUp * (0.75 + ((i * 17) % 4) * 0.06), ((i * 29) % 5) / 5 - 0.5).normalize();
-    const base = new THREE.Vector3(baseX, 0.04 * dirUp, ((i * 11) % 5) / 5 - 0.4);
-    const mid = base.clone().addScaledVector(dir, twigLen / 2);
-
-    const twigGeo = new THREE.CylinderGeometry(0.008, 0.026, twigLen, 8);
-    const twigMat = new THREE.MeshPhysicalMaterial({ color: 0x1c2560, roughness: 0.5, metalness: 0.25, clearcoat: 0.3 });
-    const twig = new THREE.Mesh(twigGeo, twigMat);
-    twig.position.copy(mid);
-    twig.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-    scene.add(twig);
-
-    geometries.push(twigGeo);
-    materials.push(twigMat);
-  }
 
   let hoverT = null;
   function pickNearest(nx) {
-    let nearest = branches[0];
+    let nearest = nodes[0];
     let best = Infinity;
-    branches.forEach((b) => {
-      const d = Math.abs(b.project.t - nx);
+    nodes.forEach((n) => {
+      const d = Math.abs(n.item.t - nx);
       if (d < best) {
         best = d;
-        nearest = b;
+        nearest = n;
       }
     });
     return nearest;
@@ -844,7 +817,7 @@ export function createTreeScene(canvas, projects, { onActive } = {}) {
     (e) => {
       const rect = canvas.getBoundingClientRect();
       hoverT = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-      if (onActive) onActive(pickNearest(hoverT).project);
+      if (onActive) onActive(pickNearest(hoverT).item);
     },
     { passive: true }
   );
@@ -869,25 +842,26 @@ export function createTreeScene(canvas, projects, { onActive } = {}) {
 
   camera.position.set(0, 0.35, 4.8);
 
+  const n = nodes.length;
   let raf = null;
   function tick(t) {
     raf = requestAnimationFrame(tick);
     if (!visible) return;
     const time = t * 0.001;
-    const targetX = hoverT !== null ? (hoverT - 0.5) * trunkLength * 0.85 : 0;
+    const targetX = hoverT !== null ? (hoverT - 0.5) * lineLength * 0.85 : 0;
     const targetZ = hoverT !== null ? 3.1 : 4.8;
     camera.position.x += (targetX - camera.position.x) * 0.06;
     camera.position.z += (targetZ - camera.position.z) * 0.06;
     camera.position.y = 0.35 + Math.sin(time * 0.3) * 0.04;
     camera.lookAt(camera.position.x, 0.15, 0);
-    trunk.rotation.x = Math.sin(time * 0.2) * 0.015;
 
-    branches.forEach((b) => {
-      const active = hoverT !== null && Math.abs(b.project.t - hoverT) < 0.5 / n;
-      const targetScale = active ? 1.4 : 1;
-      b.scale += (targetScale - b.scale) * 0.12;
-      b.bud.scale.setScalar(b.scale);
-      b.mat.emissiveIntensity += ((active ? 0.95 : 0.25) - b.mat.emissiveIntensity) * 0.12;
+    nodes.forEach((nd) => {
+      const active = hoverT !== null && Math.abs(nd.item.t - hoverT) < 0.5 / n;
+      const pulse = nd.item.isToday ? 1 + Math.sin(time * 1.6) * 0.08 : 1;
+      const targetScale = (active ? 1.4 : 1) * pulse;
+      nd.scale += (targetScale - nd.scale) * 0.12;
+      nd.node.scale.setScalar(nd.scale);
+      nd.mat.emissiveIntensity += ((active ? nd.baseEmissive + 0.7 : nd.baseEmissive) - nd.mat.emissiveIntensity) * 0.12;
     });
 
     renderer.render(scene, camera);

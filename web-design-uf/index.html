@@ -63,10 +63,6 @@
           </a>
         </div>
       </div>
-
-      <div class="marquee" aria-hidden="true">
-        <p class="marquee__line">Design — Utveckling — Lansering — Upprepa — Aldrig några mallar</p>
-      </div>
     </header>
 
     <!-- ============ MANIFESTO ============ -->
@@ -110,20 +106,19 @@
             <div class="service-panel__grid">
               <div>
                 <h2 class="service-panel__heading">Skärmar vi är<br />stolta över.</h2>
-                <p class="service-panel__body">Ett urval av sajter vi nyligen levererat — varumärken, butiker och menyer som äntligen ser lika bra ut som de fungerar. Varje gren i trädet nedan är ett uppdrag, datumstämplat den dag det gick i luften. För muspekaren över trädet för att resa genom tidslinjen.</p>
-                <div class="tree-visual">
-                  <canvas id="tree-canvas" aria-hidden="true"></canvas>
-                  <div class="tree-caption" id="tree-caption">
-                    <span class="tree-caption__date"></span>
-                    <span class="tree-caption__name"></span>
-                    <span class="tree-caption__tag"></span>
-                    <a class="tree-caption__link" target="_blank" rel="noopener noreferrer" hidden>Besök sajten →</a>
+                <p class="service-panel__body">Ett urval av sajter vi nyligen levererat — varumärken, butiker och menyer som äntligen ser lika bra ut som de fungerar. Tidslinjen nedan visar när varje sajt gick i luften, räknat fram till idag.</p>
+                <div class="timeline-visual">
+                  <canvas id="timeline-canvas" aria-hidden="true"></canvas>
+                  <div class="timeline-caption" id="timeline-caption">
+                    <span class="timeline-caption__date"></span>
+                    <span class="timeline-caption__name"></span>
+                    <span class="timeline-caption__tag"></span>
+                    <a class="timeline-caption__link" target="_blank" rel="noopener noreferrer" hidden>Besök sajten →</a>
                   </div>
-                  <script type="application/json" id="tree-data">
+                  <script type="application/json" id="timeline-data">
                     [
-                      { "name": "45ans Pizzeria & Restaurant", "tag": "Pizzeria — Webb", "dateLabel": "Februari 2026", "href": "https://claude.ai/code/artifact/58e542e9-137a-4f11-a926-302b85b93e8e" },
-                      { "name": "Pizzeria Esila", "tag": "Pizzeria — Webb", "dateLabel": "Maj 2026", "href": "https://claude.ai/code/artifact/69d49f33-61fe-45cc-b9b7-6f20e02a16d5" },
-                      { "name": "Nästa uppdrag", "tag": "Din sajt?", "dateLabel": "Snart", "href": "#contact" }
+                      { "name": "45ans Pizzeria & Restaurant", "tag": "Pizzeria — Webb", "date": "2026-03-10", "href": "https://claude.ai/code/artifact/58e542e9-137a-4f11-a926-302b85b93e8e" },
+                      { "name": "Pizzeria Esila", "tag": "Pizzeria — Webb", "date": "2026-06-22", "href": "https://claude.ai/code/artifact/69d49f33-61fe-45cc-b9b7-6f20e02a16d5" }
                     ]
                   </script>
                 </div>
@@ -197,44 +192,6 @@
           </article>
         </div>
       </div>
-    </section>
-
-    <!-- ============ TESTIMONIALS ============ -->
-    <section class="testimonials">
-      <canvas id="testimonials-canvas" aria-hidden="true"></canvas>
-      <div class="wrap testimonials__head">
-        <p class="eyebrow">Vad kunderna säger</p>
-      </div>
-      <div class="testimonials__viewport">
-        <div class="testimonials__track">
-          <figure class="t-card">
-            <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">De gjorde vår meny till något folk skärmdumpar. Bokningarna har tredubblats sedan lanseringen.</blockquote>
-            <figcaption class="t-card__meta">Nico Reyes — North &amp; Lime</figcaption>
-          </figure>
-          <figure class="t-card">
-            <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">Snabbt, vasst och utan behov av handpåläggning. Precis vad ett litet team behöver.</blockquote>
-            <figcaption class="t-card__meta">Priya Anand — Haven Goods</figcaption>
-          </figure>
-          <figure class="t-card">
-            <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">Jag har aldrig haft en designer som bara fattar det så här snabbt.</blockquote>
-            <figcaption class="t-card__meta">Marco Diallo — Arlo Studio</figcaption>
-          </figure>
-          <figure class="t-card">
-            <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">Redaktionellt, konstigt på rätt sätt, precis enligt briefen.</blockquote>
-            <figcaption class="t-card__meta">Etta Cole — Paloma</figcaption>
-          </figure>
-          <figure class="t-card">
-            <span class="t-card__mark" aria-hidden="true">&ldquo;</span>
-            <blockquote class="t-card__quote">De ställde bättre frågor om vår verksamhet än våra tre senaste byråer tillsammans.</blockquote>
-            <figcaption class="t-card__meta">Jonas Weir — Kiosk Nine</figcaption>
-          </figure>
-        </div>
-      </div>
-      <div class="wrap testimonials__foot"></div>
     </section>
 
     <!-- ============ CTA ============ -->

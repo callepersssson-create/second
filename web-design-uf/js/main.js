@@ -1,4 +1,4 @@
-import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createTreeScene } from "./webgl.js";
+import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createTimelineScene } from "./webgl.js";
 import * as THREE from "../vendor/three.module.min.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -137,17 +137,6 @@ const teamScene = teamCanvas
     })
   : null;
 
-const testimonialsCanvas = document.getElementById("testimonials-canvas");
-const testimonialsScene = testimonialsCanvas
-  ? createBlobScene(testimonialsCanvas, {
-      colorA: "#0a0b14",
-      colorB: "#7c6fff",
-      colorC: "#1e2de0",
-      seed: 9.2,
-      mouseScope: "local",
-    })
-  : null;
-
 const studioCanvas = document.getElementById("studio-canvas");
 const studioScene = studioCanvas ? createStudioScene(studioCanvas) : null;
 
@@ -177,34 +166,60 @@ const ctaGemScene = ctaGemCanvas
     })
   : null;
 
-const treeCanvas = document.getElementById("tree-canvas");
-const treeCaption = document.getElementById("tree-caption");
-const treeDataEl = document.getElementById("tree-data");
-let treeScene = null;
-if (treeCanvas && treeCaption && treeDataEl) {
-  const projects = JSON.parse(treeDataEl.textContent);
-  const renderCaption = (project) => {
-    if (!project) {
-      treeCaption.classList.remove("is-active");
+const timelineCanvas = document.getElementById("timeline-canvas");
+const timelineCaption = document.getElementById("timeline-caption");
+const timelineDataEl = document.getElementById("timeline-data");
+let timelineScene = null;
+if (timelineCanvas && timelineCaption && timelineDataEl) {
+  const dateFormatter = new Intl.DateTimeFormat("sv-SE", { day: "numeric", month: "long", year: "numeric" });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const projects = JSON.parse(timelineDataEl.textContent).map((p) => ({ ...p, dateObj: new Date(`${p.date}T00:00:00`) }));
+  const earliest = projects.reduce((min, p) => (p.dateObj < min ? p.dateObj : min), today);
+  const span = Math.max(1, today - earliest);
+
+  const items = [
+    ...projects.map((p) => ({
+      name: p.name,
+      tag: p.tag,
+      href: p.href,
+      dateLabel: dateFormatter.format(p.dateObj),
+      t: (p.dateObj - earliest) / span,
+    })),
+    {
+      name: "Idag",
+      tag: "Redo för nästa uppdrag",
+      href: "#contact",
+      dateLabel: dateFormatter.format(today),
+      t: 1,
+      isToday: true,
+    },
+  ];
+
+  const renderCaption = (item) => {
+    if (!item) {
+      timelineCaption.classList.remove("is-active");
       return;
     }
-    treeCaption.classList.add("is-active");
-    treeCaption.querySelector(".tree-caption__date").textContent = project.dateLabel;
-    treeCaption.querySelector(".tree-caption__name").textContent = project.name;
-    treeCaption.querySelector(".tree-caption__tag").textContent = project.tag;
-    const link = treeCaption.querySelector(".tree-caption__link");
-    if (project.href) {
-      link.href = project.href;
-      link.target = project.href.startsWith("#") ? "_self" : "_blank";
+    timelineCaption.classList.add("is-active");
+    timelineCaption.querySelector(".timeline-caption__date").textContent = item.dateLabel;
+    timelineCaption.querySelector(".timeline-caption__name").textContent = item.name;
+    timelineCaption.querySelector(".timeline-caption__tag").textContent = item.tag;
+    const link = timelineCaption.querySelector(".timeline-caption__link");
+    if (item.href) {
+      link.href = item.href;
+      link.target = item.href.startsWith("#") ? "_self" : "_blank";
       link.hidden = false;
     } else {
       link.hidden = true;
     }
   };
-  renderCaption(projects[0]);
-  treeScene = createTreeScene(treeCanvas, projects, { onActive: (project) => renderCaption(project || projects[0]) });
+  const defaultItem = items[items.length - 1];
+  renderCaption(defaultItem);
+  timelineScene = createTimelineScene(timelineCanvas, items, { onActive: (item) => renderCaption(item || defaultItem) });
 
-  treeCaption.querySelector(".tree-caption__link").addEventListener("click", (e) => {
+  timelineCaption.querySelector(".timeline-caption__link").addEventListener("click", (e) => {
     const href = e.currentTarget.getAttribute("href") || "";
     if (!href.startsWith("#")) return;
     e.preventDefault();
@@ -250,10 +265,10 @@ document.querySelectorAll(".tile").forEach((tile) => {
 });
 
 /* ------------------------------------------------------------------ */
-/* 3D tilt on the team and testimonial cards                            */
+/* 3D tilt on the team cards                                            */
 /* ------------------------------------------------------------------ */
 if (supportsHover && !prefersReduced) {
-  document.querySelectorAll(".member, .t-card").forEach((card) => {
+  document.querySelectorAll(".member").forEach((card) => {
     card.addEventListener("pointermove", (e) => {
       const rect = card.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
@@ -293,8 +308,7 @@ function boot() {
     .to(".hero__headline .line span", { yPercent: 0, duration: 1.15, stagger: 0.12 }, "-=0.55")
     .from(".hero__eyebrow", { autoAlpha: 0, y: 14, duration: 0.7 }, "-=1.0")
     .from(".hero__sub", { autoAlpha: 0, y: 14, duration: 0.7 }, "-=0.85")
-    .from(".hero__actions", { autoAlpha: 0, y: 14, duration: 0.7 }, "-=0.75")
-    .from(".marquee", { autoAlpha: 0, duration: 0.6 }, "-=0.5");
+    .from(".hero__actions", { autoAlpha: 0, y: 14, duration: 0.7 }, "-=0.75");
 }
 
 if (prefersReduced) {
@@ -361,29 +375,6 @@ if (!prefersReduced && servicesTrack) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Testimonials — pinned horizontal scrub                               */
-/* ------------------------------------------------------------------ */
-const testimonialsTrack = document.querySelector(".testimonials__track");
-
-if (!prefersReduced && testimonialsTrack) {
-  ScrollTrigger.create({
-    trigger: ".testimonials__viewport",
-    start: "top top",
-    end: () => "+=" + Math.max(1, testimonialsTrack.scrollWidth - window.innerWidth),
-    pin: true,
-    scrub: 1,
-    invalidateOnRefresh: true,
-    animation: gsap.to(testimonialsTrack, {
-      x: () => -(testimonialsTrack.scrollWidth - window.innerWidth + 32),
-      ease: "none",
-    }),
-  });
-} else if (testimonialsTrack) {
-  testimonialsTrack.style.overflowX = "auto";
-  testimonialsTrack.style.paddingBottom = "1rem";
-}
-
-/* ------------------------------------------------------------------ */
 /* Hero / CTA parallax tied to scroll position                         */
 /* ------------------------------------------------------------------ */
 ScrollTrigger.create({
@@ -423,11 +414,10 @@ window.addEventListener("beforeunload", () => {
   if (manifestoScene) manifestoScene.destroy();
   if (supportScene) supportScene.destroy();
   if (teamScene) teamScene.destroy();
-  if (testimonialsScene) testimonialsScene.destroy();
   if (studioScene) studioScene.destroy();
   if (heroGemScene) heroGemScene.destroy();
   if (ctaGemScene) ctaGemScene.destroy();
-  if (treeScene) treeScene.destroy();
+  if (timelineScene) timelineScene.destroy();
   tileScenes.forEach((s) => s.destroy());
   starfield.destroy();
 });
