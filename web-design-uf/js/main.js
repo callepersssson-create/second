@@ -1,4 +1,4 @@
-import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene } from "./webgl.js";
+import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createScreensScene } from "./webgl.js";
 import * as THREE from "../vendor/three.module.min.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -176,6 +176,9 @@ const ctaGemScene = ctaGemCanvas
       floatAmp: 0.14,
     })
   : null;
+
+const screensCanvas = document.getElementById("screens-canvas");
+const screensScene = screensCanvas ? createScreensScene(screensCanvas) : null;
 
 const tileScenes = [];
 document.querySelectorAll(".tile").forEach((tile) => {
@@ -398,6 +401,7 @@ window.addEventListener("beforeunload", () => {
   if (studioScene) studioScene.destroy();
   if (heroGemScene) heroGemScene.destroy();
   if (ctaGemScene) ctaGemScene.destroy();
+  if (screensScene) screensScene.destroy();
   tileScenes.forEach((s) => s.destroy());
   starfield.destroy();
 });

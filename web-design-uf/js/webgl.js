@@ -735,3 +735,145 @@ export function createGemScene(canvas, { geometry, colorA, colorB, colorC, rotSp
     },
   };
 }
+
+/* ---------------------------------------------------------------------
+   ScreensScene — a small fanned stack of glossy browser windows, the
+   one 3D moment that points at the actual craft (screens, layout,
+   content) instead of pure abstraction. Lives in the "work" panel.
+   ------------------------------------------------------------------- */
+function makeScreenTexture({ chrome, panel, accent, lines }) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 340;
+  const ctx = canvas.getContext("2d");
+  const r = 26;
+
+  ctx.fillStyle = panel;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, 512, 340, r);
+  ctx.fill();
+
+  ctx.fillStyle = chrome;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, 512, 54, [r, r, 0, 0]);
+  ctx.fill();
+
+  ["#ff4433", "#dcff4f", "#7c6fff"].forEach((c, i) => {
+    ctx.beginPath();
+    ctx.fillStyle = c;
+    ctx.arc(30 + i * 26, 27, 6, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.fillStyle = accent;
+  ctx.globalAlpha = 0.95;
+  ctx.beginPath();
+  ctx.roundRect(36, 90, 210, 28, 6);
+  ctx.fill();
+
+  ctx.globalAlpha = 0.28;
+  lines.forEach((w, i) => {
+    ctx.beginPath();
+    ctx.roundRect(36, 146 + i * 30, w, 12, 6);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  return canvas;
+}
+
+export function createScreensScene(canvas) {
+  const renderer = makeRenderer(canvas);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
+  camera.position.set(0, 0, 6.5);
+
+  addWheelLighting(scene);
+
+  const screens = [
+    { chrome: "#151d6b", panel: "#0d1352", accent: "#a9b8ff", lines: [420, 360, 300], x: -0.55, y: -0.22, z: -0.35, rot: -0.16 },
+    { chrome: "#1a2680", panel: "#101960", accent: "#dcff4f", lines: [400, 340, 380], x: 0, y: 0.05, z: 0, rot: 0.02 },
+    { chrome: "#222f9c", panel: "#141d70", accent: "#8fa3ff", lines: [380, 420, 320], x: 0.55, y: 0.22, z: 0.35, rot: 0.18 },
+  ];
+
+  const group = new THREE.Group();
+  const geometries = [];
+  const materials = [];
+  const textures = [];
+
+  screens.forEach((s) => {
+    const canvasTex = makeScreenTexture(s);
+    const texture = new THREE.CanvasTexture(canvasTex);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const geo = new THREE.PlaneGeometry(1.9, 1.26);
+    const mat = new THREE.MeshPhysicalMaterial({
+      map: texture,
+      transparent: true,
+      roughness: 0.3,
+      metalness: 0.15,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.3,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(s.x, s.y, s.z);
+    mesh.rotation.z = s.rot;
+    group.add(mesh);
+    geometries.push(geo);
+    materials.push(mat);
+    textures.push(texture);
+  });
+  scene.add(group);
+
+  const mouseTarget = new THREE.Vector2(0, 0);
+  canvas.parentElement.addEventListener(
+    "pointermove",
+    (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseTarget.set(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        ((e.clientY - rect.top) / rect.height) * 2 - 1
+      );
+    },
+    { passive: true }
+  );
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(1, Math.floor(rect.width));
+    const h = Math.max(1, Math.floor(rect.height));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  const stopResize = observeResize(canvas, resize);
+
+  let visible = true;
+  const stopVisibility = observeVisibility(canvas, (v) => (visible = v));
+
+  let raf = null;
+  function tick(t) {
+    raf = requestAnimationFrame(tick);
+    if (!visible) return;
+    const time = t * 0.001;
+    group.rotation.y = Math.sin(time * 0.25) * 0.35;
+    group.position.y = Math.sin(time * 0.4) * 0.08;
+    camera.position.x += (mouseTarget.x * 0.8 - camera.position.x) * 0.04;
+    camera.position.y += (-mouseTarget.y * 0.5 - camera.position.y) * 0.04;
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+  }
+  raf = requestAnimationFrame(tick);
+
+  return {
+    destroy() {
+      cancelAnimationFrame(raf);
+      stopResize();
+      stopVisibility();
+      geometries.forEach((g) => g.dispose());
+      materials.forEach((m) => m.dispose());
+      textures.forEach((t) => t.dispose());
+      renderer.dispose();
+    },
+  };
+}
