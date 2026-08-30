@@ -221,8 +221,92 @@ export function createBlobScene(canvas, { colorA, colorB, colorC, seed = 0, mous
 }
 
 /* ---------------------------------------------------------------------
-   StudioScene — a single smooth, glossy torus knot in a flowing brand
-   gradient: real geometry, real lighting, a slow hypnotic tumble +
+   Wheel — a literal wheel (glossy gradient rim, spokes, hub) built once
+   and reused by two scenes below: the studio panel's auto-spinning
+   version, and the "Hjulet" page's scroll-driven one turn. Kept all in
+   the blue family so it reads as one piece with the rest of the site.
+   ------------------------------------------------------------------- */
+function buildWheelGroup({
+  colorA = "#0a1050",
+  colorB = "#1e2de0",
+  colorC = "#a9b8ff",
+  spokeColor = 0x1e2de0,
+  hubColor = 0x0a1050,
+  radius = 1.2,
+  tube = 0.16,
+  spokeCount = 6,
+} = {}) {
+  const group = new THREE.Group();
+
+  const rimGeo = new THREE.TorusGeometry(radius, tube, 32, 120);
+  rimGeo.computeBoundingSphere();
+  const r = rimGeo.boundingSphere.radius || 1;
+  const cA = new THREE.Color(colorA);
+  const cB = new THREE.Color(colorB);
+  const cC = new THREE.Color(colorC);
+  const pos = rimGeo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
+  for (let i = 0; i < pos.count; i++) {
+    const t = Math.min(1, Math.max(0, (pos.getY(i) / r) * 0.5 + 0.5));
+    const mixed = t < 0.5 ? cA.clone().lerp(cB, t * 2) : cB.clone().lerp(cC, (t - 0.5) * 2);
+    colors[i * 3] = mixed.r;
+    colors[i * 3 + 1] = mixed.g;
+    colors[i * 3 + 2] = mixed.b;
+  }
+  rimGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const rimMat = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    roughness: 0.22,
+    metalness: 0.4,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.25,
+  });
+  group.add(new THREE.Mesh(rimGeo, rimMat));
+
+  const hubRadius = radius * 0.18;
+  const hubMat = new THREE.MeshPhysicalMaterial({ color: hubColor, roughness: 0.3, metalness: 0.55, clearcoat: 0.5 });
+  group.add(new THREE.Mesh(new THREE.SphereGeometry(hubRadius, 24, 24), hubMat));
+
+  const rimInner = radius - tube;
+  const spokeLen = Math.max(0.1, rimInner - hubRadius);
+  const centerDist = hubRadius + spokeLen / 2;
+  const spokeGeo = new THREE.CylinderGeometry(radius * 0.035, radius * 0.035, spokeLen, 12);
+  const spokeMat = new THREE.MeshPhysicalMaterial({ color: spokeColor, roughness: 0.35, metalness: 0.45, clearcoat: 0.4 });
+  for (let i = 0; i < spokeCount; i++) {
+    const theta = (i / spokeCount) * Math.PI * 2;
+    const spoke = new THREE.Mesh(spokeGeo, spokeMat);
+    spoke.rotation.z = theta - Math.PI / 2;
+    spoke.position.set(Math.cos(theta) * centerDist, Math.sin(theta) * centerDist, 0);
+    group.add(spoke);
+  }
+
+  return {
+    group,
+    dispose() {
+      rimGeo.dispose();
+      rimMat.dispose();
+      hubMat.dispose();
+      spokeGeo.dispose();
+      spokeMat.dispose();
+    },
+  };
+}
+
+function addWheelLighting(scene) {
+  scene.add(new THREE.AmbientLight(0x1c2560, 0.55));
+  const key = new THREE.DirectionalLight(0xd9e0ff, 1.15);
+  key.position.set(3, 4, 5);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x7c6fff, 0.85);
+  rim.position.set(-4, -2, -3);
+  scene.add(rim);
+  const fill = new THREE.DirectionalLight(0x5a72ff, 0.35);
+  fill.position.set(0, -3, 4);
+  scene.add(fill);
+}
+
+/* ---------------------------------------------------------------------
+   StudioScene — the wheel, auto-spinning with a slow hypnotic tumble +
    pointer parallax. Built to catch the eye without competing with the
    liquid-shader system used everywhere else.
    ------------------------------------------------------------------- */
@@ -232,42 +316,9 @@ export function createStudioScene(canvas) {
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 50);
   camera.position.set(0, 0, 7);
 
-  scene.add(new THREE.AmbientLight(0x362f6b, 0.55));
-  const key = new THREE.DirectionalLight(0xd9e0ff, 1.15);
-  key.position.set(3, 4, 5);
-  scene.add(key);
-  const rim = new THREE.DirectionalLight(0x7c6fff, 0.9);
-  rim.position.set(-4, -2, -3);
-  scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xdcff4f, 0.4);
-  fill.position.set(0, -3, 4);
-  scene.add(fill);
-
-  const geometry = new THREE.TorusKnotGeometry(1.15, 0.36, 260, 40, 2, 3);
-  const colorA = new THREE.Color(0x1e2de0);
-  const colorB = new THREE.Color(0x7c6fff);
-  const colorC = new THREE.Color(0xdcff4f);
-  const positions = geometry.attributes.position;
-  const colors = new Float32Array(positions.count * 3);
-  for (let i = 0; i < positions.count; i++) {
-    const t = i / positions.count;
-    const mixed = t < 0.5 ? colorA.clone().lerp(colorB, t * 2) : colorB.clone().lerp(colorC, (t - 0.5) * 2);
-    colors[i * 3] = mixed.r;
-    colors[i * 3 + 1] = mixed.g;
-    colors[i * 3 + 2] = mixed.b;
-  }
-  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-  const material = new THREE.MeshPhysicalMaterial({
-    vertexColors: true,
-    roughness: 0.26,
-    metalness: 0.4,
-    clearcoat: 0.65,
-    clearcoatRoughness: 0.3,
-  });
-
-  const knot = new THREE.Mesh(geometry, material);
-  scene.add(knot);
+  addWheelLighting(scene);
+  const wheel = buildWheelGroup();
+  scene.add(wheel.group);
 
   const mouseTarget = new THREE.Vector2(0, 0);
   canvas.parentElement.addEventListener(
@@ -301,9 +352,9 @@ export function createStudioScene(canvas) {
     raf = requestAnimationFrame(tick);
     if (!visible) return;
     const time = t * 0.001;
-    knot.rotation.x = time * 0.2;
-    knot.rotation.y = time * 0.28;
-    knot.position.y = Math.sin(time * 0.5) * 0.12;
+    wheel.group.rotation.z = time * 0.22;
+    wheel.group.rotation.x = Math.sin(time * 0.3) * 0.15;
+    wheel.group.position.y = Math.sin(time * 0.5) * 0.1;
     camera.position.x += (mouseTarget.x * 1.2 - camera.position.x) * 0.04;
     camera.position.y += (-mouseTarget.y * 0.8 - camera.position.y) * 0.04;
     camera.lookAt(0, 0, 0);
@@ -316,8 +367,66 @@ export function createStudioScene(canvas) {
       cancelAnimationFrame(raf);
       stopResize();
       stopVisibility();
-      geometry.dispose();
-      material.dispose();
+      wheel.dispose();
+      renderer.dispose();
+    },
+  };
+}
+
+/* ---------------------------------------------------------------------
+   WheelPageScene — the same wheel, but rotation is driven entirely by
+   scroll progress (setProgress) rather than time, for the "Hjulet" page.
+   ------------------------------------------------------------------- */
+export function createWheelPageScene(canvas) {
+  const renderer = makeRenderer(canvas);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
+  camera.position.set(0, 0, 7);
+
+  addWheelLighting(scene);
+  const wheel = buildWheelGroup({ radius: 1.5, tube: 0.2, spokeCount: 8 });
+  scene.add(wheel.group);
+
+  const mouseTarget = new THREE.Vector2(0, 0);
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      mouseTarget.set((e.clientX / window.innerWidth) * 2 - 1, (e.clientY / window.innerHeight) * 2 - 1);
+    },
+    { passive: true }
+  );
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(1, Math.floor(rect.width));
+    const h = Math.max(1, Math.floor(rect.height));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  const stopResize = observeResize(canvas, resize);
+
+  let progress = 0;
+  let raf = null;
+  function tick() {
+    raf = requestAnimationFrame(tick);
+    wheel.group.rotation.z = -progress * Math.PI * 2;
+    camera.position.x += (mouseTarget.x * 0.6 - camera.position.x) * 0.03;
+    camera.position.y += (-mouseTarget.y * 0.4 - camera.position.y) * 0.03;
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+  }
+  raf = requestAnimationFrame(tick);
+
+  return {
+    setProgress(p) {
+      progress = p;
+    },
+    destroy() {
+      cancelAnimationFrame(raf);
+      stopResize();
+      wheel.dispose();
       renderer.dispose();
     },
   };
@@ -333,9 +442,9 @@ export function createTileScene(canvas, hue) {
   const camera = new THREE.Camera();
 
   const hues = {
-    cobalt: ["#1e2de0", "#11167a", "#dcff4f"],
+    cobalt: ["#1e2de0", "#11167a", "#a9b8ff"],
     coral: ["#ff4433", "#971d13", "#f2ecdd"],
-    lime: ["#16130f", "#1e2de0", "#dcff4f"],
+    lime: ["#16130f", "#1e2de0", "#a9b8ff"],
     ink: ["#16130f", "#ff4433", "#f2ecdd"],
   };
   const [a, b, c] = hues[hue] || hues.cobalt;
@@ -541,7 +650,7 @@ export function createGemScene(canvas, { geometry, colorA, colorB, colorC, rotSp
   const rim = new THREE.DirectionalLight(0x7c6fff, 0.9);
   rim.position.set(-4, -1, -3);
   scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xdcff4f, 0.35);
+  const fill = new THREE.DirectionalLight(0x5a72ff, 0.35);
   fill.position.set(-1, -3, 4);
   scene.add(fill);
 

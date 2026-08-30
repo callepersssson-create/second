@@ -99,7 +99,7 @@ const heroScene = createBlobScene(document.getElementById("hero-canvas"), {
 const ctaScene = createBlobScene(document.getElementById("cta-canvas"), {
   colorA: "#1e2de0",
   colorB: "#11167a",
-  colorC: "#dcff4f",
+  colorC: "#8fa3ff",
   seed: 2.1,
   mouseScope: "global",
 });
@@ -119,7 +119,7 @@ const supportCanvas = document.getElementById("support-canvas");
 const supportScene = supportCanvas
   ? createBlobScene(supportCanvas, {
       colorA: "#0a0b14",
-      colorB: "#ff4433",
+      colorB: "#1e2de0",
       colorC: "#7c6fff",
       seed: 4.6,
       mouseScope: "local",
@@ -131,7 +131,7 @@ const teamScene = teamCanvas
   ? createBlobScene(teamCanvas, {
       colorA: "#0a0b14",
       colorB: "#1e2de0",
-      colorC: "#971d13",
+      colorC: "#7c6fff",
       seed: 7.3,
       mouseScope: "local",
     })
@@ -155,9 +155,9 @@ const heroGemCanvas = document.getElementById("hero-gem-canvas");
 const heroGemScene = heroGemCanvas
   ? createGemScene(heroGemCanvas, {
       geometry: new THREE.IcosahedronGeometry(1.4, 4),
-      colorA: "#1e2de0",
-      colorB: "#7c6fff",
-      colorC: "#dcff4f",
+      colorA: "#11167a",
+      colorB: "#1e2de0",
+      colorC: "#a9b8ff",
       rotSpeedX: 0.12,
       rotSpeedY: 0.18,
       floatAmp: 0.18,
@@ -168,7 +168,7 @@ const ctaGemCanvas = document.getElementById("cta-gem-canvas");
 const ctaGemScene = ctaGemCanvas
   ? createGemScene(ctaGemCanvas, {
       geometry: new THREE.TorusGeometry(1.15, 0.32, 48, 128),
-      colorA: "#dcff4f",
+      colorA: "#1e2de0",
       colorB: "#11167a",
       colorC: "#7c6fff",
       rotSpeedX: 0.2,
