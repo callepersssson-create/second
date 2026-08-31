@@ -346,35 +346,6 @@ gsap.utils.toArray(".stat").forEach((el, i) => {
 });
 
 /* ------------------------------------------------------------------ */
-/* Services — pinned horizontal index                                   */
-/* ------------------------------------------------------------------ */
-const servicesTrack = document.querySelector(".services__track");
-const panels = gsap.utils.toArray(".service-panel");
-
-if (!prefersReduced && servicesTrack) {
-  gsap.to(servicesTrack, {
-    x: () => -(panels.length - 1) * window.innerWidth,
-    ease: "none",
-    scrollTrigger: {
-      trigger: ".services",
-      start: "top top",
-      end: () => "+=" + (panels.length - 1) * window.innerWidth,
-      pin: true,
-      scrub: 1,
-      invalidateOnRefresh: true,
-    },
-  });
-} else if (servicesTrack) {
-  servicesTrack.style.display = "block";
-  panels.forEach((p) => {
-    p.style.width = "100%";
-    p.style.height = "auto";
-    p.style.padding = "4rem var(--gutter)";
-  });
-  document.querySelector(".services__viewport").style.height = "auto";
-}
-
-/* ------------------------------------------------------------------ */
 /* Hero / CTA parallax tied to scroll position                         */
 /* ------------------------------------------------------------------ */
 ScrollTrigger.create({

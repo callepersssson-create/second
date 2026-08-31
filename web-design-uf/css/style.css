@@ -512,41 +512,35 @@ body:not(.has-custom-cursor) .cursor {
   color: var(--on-dark-soft);
 }
 
-/* ---------- services (pinned horizontal index) ---------- */
+/* ---------- services (vertical index) ---------- */
 
 .services {
   position: relative;
   background: var(--void);
 }
 
-.services__viewport {
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: stretch;
-}
-
 .services__track {
   display: flex;
-  height: 100%;
-  will-change: transform;
+  flex-direction: column;
 }
 
 .service-panel {
-  width: 100vw;
-  height: 100%;
-  flex: none;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 var(--gutter);
+  padding: var(--section-pad) var(--gutter);
   position: relative;
+  border-bottom: 1px solid var(--on-dark-line);
+}
+
+.service-panel:last-child {
+  border-bottom: none;
 }
 
 .service-panel__folio {
-  position: absolute;
-  top: clamp(6.5rem, 10vh, 8rem);
-  left: var(--gutter);
+  display: block;
+  margin-bottom: clamp(2rem, 5vh, 3rem);
   font-family: var(--font-body);
   font-size: 0.78rem;
   letter-spacing: 0.14em;
@@ -1111,10 +1105,6 @@ body:not(.has-custom-cursor) .cursor {
 @media (max-width: 640px) {
   .nav__links {
     gap: 1rem;
-  }
-
-  .service-panel {
-    width: 100vw;
   }
 
   .tile-grid {
