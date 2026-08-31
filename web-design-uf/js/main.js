@@ -1,4 +1,4 @@
-import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createTimelineScene } from "./webgl.js";
+import { createBlobScene, createStudioScene, createTileScene, createStarfield, createGemScene, createLogoWheelScene, createTimelineScene } from "./webgl.js";
 import * as THREE from "../vendor/three.module.min.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -35,41 +35,6 @@ document.querySelectorAll('a[href^="#"]').forEach((a) => {
     }
   });
 });
-
-/* ------------------------------------------------------------------ */
-/* Custom cursor                                                       */
-/* ------------------------------------------------------------------ */
-if (supportsHover && !prefersReduced) {
-  document.body.classList.add("has-custom-cursor");
-  const dot = document.querySelector(".cursor--dot");
-  const ring = document.querySelector(".cursor--ring");
-  const moveDotX = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3" });
-  const moveDotY = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3" });
-  const moveRingX = gsap.quickTo(ring, "x", { duration: 0.35, ease: "power3" });
-  const moveRingY = gsap.quickTo(ring, "y", { duration: 0.35, ease: "power3" });
-
-  window.addEventListener(
-    "pointermove",
-    (e) => {
-      moveDotX(e.clientX);
-      moveDotY(e.clientY);
-      moveRingX(e.clientX);
-      moveRingY(e.clientY);
-    },
-    { passive: true }
-  );
-
-  document.querySelectorAll("a, button, .tile").forEach((el) => {
-    el.addEventListener("mouseenter", () => {
-      dot.classList.add("is-active");
-      ring.classList.add("is-active");
-    });
-    el.addEventListener("mouseleave", () => {
-      dot.classList.remove("is-active");
-      ring.classList.remove("is-active");
-    });
-  });
-}
 
 /* ------------------------------------------------------------------ */
 /* Starfield — the ambient layer that ties every section to one deep,  */
@@ -140,18 +105,8 @@ const teamScene = teamCanvas
 const studioCanvas = document.getElementById("studio-canvas");
 const studioScene = studioCanvas ? createStudioScene(studioCanvas) : null;
 
-const heroGemCanvas = document.getElementById("hero-gem-canvas");
-const heroGemScene = heroGemCanvas
-  ? createGemScene(heroGemCanvas, {
-      geometry: new THREE.IcosahedronGeometry(1.4, 4),
-      colorA: "#11167a",
-      colorB: "#1e2de0",
-      colorC: "#a9b8ff",
-      rotSpeedX: 0.12,
-      rotSpeedY: 0.18,
-      floatAmp: 0.18,
-    })
-  : null;
+const heroLogoCanvas = document.getElementById("hero-logo-canvas");
+const heroLogoScene = heroLogoCanvas ? createLogoWheelScene(heroLogoCanvas) : null;
 
 const ctaGemCanvas = document.getElementById("cta-gem-canvas");
 const ctaGemScene = ctaGemCanvas
@@ -386,7 +341,7 @@ window.addEventListener("beforeunload", () => {
   if (supportScene) supportScene.destroy();
   if (teamScene) teamScene.destroy();
   if (studioScene) studioScene.destroy();
-  if (heroGemScene) heroGemScene.destroy();
+  if (heroLogoScene) heroLogoScene.destroy();
   if (ctaGemScene) ctaGemScene.destroy();
   if (timelineScene) timelineScene.destroy();
   tileScenes.forEach((s) => s.destroy());

@@ -737,6 +737,219 @@ export function createGemScene(canvas, { geometry, colorA, colorB, colorC, rotSp
 }
 
 /* ---------------------------------------------------------------------
+   LogoWheelScene — the brand mark: a real 3D wheel with "Web Design UF"
+   on its face that the visitor can grab and spin freely in any direction.
+   Drag applies rotation with momentum; releasing it coasts to a stop and
+   settles back into a slow idle spin. Lives in the hero.
+   ------------------------------------------------------------------- */
+export function createLogoWheelScene(canvas) {
+  const renderer = makeRenderer(canvas);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 50);
+  camera.position.set(0, 0, 7);
+
+  addWheelLighting(scene);
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const radius = 1.3;
+  const tube = 0.13;
+  const rimGeo = new THREE.TorusGeometry(radius, tube, 32, 120);
+  rimGeo.computeBoundingSphere();
+  const rimR = rimGeo.boundingSphere.radius || 1;
+  const cA = new THREE.Color("#0a1050");
+  const cB = new THREE.Color("#1e2de0");
+  const cC = new THREE.Color("#a9b8ff");
+  const rimPos = rimGeo.attributes.position;
+  const rimColors = new Float32Array(rimPos.count * 3);
+  for (let i = 0; i < rimPos.count; i++) {
+    const t = Math.min(1, Math.max(0, (rimPos.getY(i) / rimR) * 0.5 + 0.5));
+    const mixed = t < 0.5 ? cA.clone().lerp(cB, t * 2) : cB.clone().lerp(cC, (t - 0.5) * 2);
+    rimColors[i * 3] = mixed.r;
+    rimColors[i * 3 + 1] = mixed.g;
+    rimColors[i * 3 + 2] = mixed.b;
+  }
+  rimGeo.setAttribute("color", new THREE.BufferAttribute(rimColors, 3));
+  const rimMat = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,
+    roughness: 0.22,
+    metalness: 0.4,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.25,
+  });
+  const rim = new THREE.Mesh(rimGeo, rimMat);
+  group.add(rim);
+
+  function drawFace(mirrored) {
+    const size = 512;
+    const c = document.createElement("canvas");
+    c.width = size;
+    c.height = size;
+    const ctx = c.getContext("2d");
+    const cx = size / 2;
+    const cy = size / 2;
+
+    const bg = ctx.createRadialGradient(cx, cy, 10, cx, cy, 235);
+    bg.addColorStop(0, "#151d6b");
+    bg.addColorStop(1, "#0a1050");
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 235, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(169, 184, 255, 0.35)";
+    ctx.lineWidth = 6;
+    for (let i = 0; i < 6; i++) {
+      const theta = (i / 6) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(theta) * 58, cy + Math.sin(theta) * 58);
+      ctx.lineTo(cx + Math.cos(theta) * 205, cy + Math.sin(theta) * 205);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = "#0a1050";
+    ctx.beginPath();
+    ctx.arc(cx, cy, 44, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#5a72ff";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    const text = "WEB DESIGN UF • WEB DESIGN UF • ";
+    const chars = text.split("");
+    const dir = mirrored ? -1 : 1;
+    const anglePerChar = (dir * (Math.PI * 2)) / chars.length;
+    const textRadius = 185;
+    ctx.font = "700 28px 'Instrument Sans', sans-serif";
+    ctx.fillStyle = "#f2ecdd";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    let angle = -Math.PI / 2;
+    chars.forEach((ch) => {
+      ctx.save();
+      ctx.translate(cx + Math.cos(angle) * textRadius, cy + Math.sin(angle) * textRadius);
+      ctx.rotate(angle + Math.PI / 2 + (mirrored ? Math.PI : 0));
+      ctx.fillText(ch, 0, 0);
+      ctx.restore();
+      angle += anglePerChar;
+    });
+
+    return c;
+  }
+
+  const faceGeo = new THREE.CircleGeometry(radius - tube, 64);
+  const geometries = [rimGeo, faceGeo];
+  const materials = [rimMat];
+
+  const frontTexture = new THREE.CanvasTexture(drawFace(false));
+  frontTexture.colorSpace = THREE.SRGBColorSpace;
+  const frontMat = new THREE.MeshPhysicalMaterial({ map: frontTexture, roughness: 0.35, metalness: 0.25, clearcoat: 0.5 });
+  const front = new THREE.Mesh(faceGeo, frontMat);
+  front.position.z = 0.01;
+  group.add(front);
+  materials.push(frontMat);
+
+  const backTexture = new THREE.CanvasTexture(drawFace(true));
+  backTexture.colorSpace = THREE.SRGBColorSpace;
+  const backMat = new THREE.MeshPhysicalMaterial({ map: backTexture, roughness: 0.35, metalness: 0.25, clearcoat: 0.5 });
+  const back = new THREE.Mesh(faceGeo, backMat);
+  back.position.z = -0.01;
+  back.rotation.y = Math.PI;
+  group.add(back);
+  materials.push(backMat);
+
+  let dragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  let lastMoveTime = 0;
+  let velX = 0;
+  let velY = 0;
+
+  canvas.addEventListener("pointerdown", (e) => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastMoveTime = performance.now();
+    velX = 0;
+    velY = 0;
+    canvas.classList.add("is-grabbing");
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const now = performance.now();
+    const dt = Math.max(1, now - lastMoveTime);
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    const rotY = dx * 0.009;
+    const rotX = dy * 0.009;
+    group.rotation.y += rotY;
+    group.rotation.x += rotX;
+    velY = (rotY / dt) * 16;
+    velX = (rotX / dt) * 16;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    lastMoveTime = now;
+  });
+
+  function releaseDrag(e) {
+    if (!dragging) return;
+    dragging = false;
+    canvas.classList.remove("is-grabbing");
+    if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+  }
+  canvas.addEventListener("pointerup", releaseDrag);
+  canvas.addEventListener("pointercancel", releaseDrag);
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(1, Math.floor(rect.width));
+    const h = Math.max(1, Math.floor(rect.height));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  const stopResize = observeResize(canvas, resize);
+
+  let visible = true;
+  const stopVisibility = observeVisibility(canvas, (v) => (visible = v));
+
+  let raf = null;
+  function tick() {
+    raf = requestAnimationFrame(tick);
+    if (!visible) return;
+    if (dragging) {
+      // rotation already applied directly from pointer deltas
+    } else if (Math.abs(velX) > 0.0002 || Math.abs(velY) > 0.0002) {
+      group.rotation.x += velX;
+      group.rotation.y += velY;
+      velX *= 0.94;
+      velY *= 0.94;
+    } else {
+      group.rotation.y += 0.0028;
+    }
+    renderer.render(scene, camera);
+  }
+  raf = requestAnimationFrame(tick);
+
+  return {
+    destroy() {
+      cancelAnimationFrame(raf);
+      stopResize();
+      stopVisibility();
+      geometries.forEach((g) => g.dispose());
+      materials.forEach((m) => m.dispose());
+      frontTexture.dispose();
+      backTexture.dispose();
+      renderer.dispose();
+    },
+  };
+}
+
+/* ---------------------------------------------------------------------
    TimelineScene — a plain 3D axis anchored at today. Each project sits
    at its real calendar position between the earliest launch and now;
    hovering scrubs a camera dolly along the line and highlights the

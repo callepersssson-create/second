@@ -162,53 +162,6 @@ section {
   position: relative;
 }
 
-/* ---------- custom cursor ---------- */
-
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border-radius: 50%;
-  background: var(--on-dark);
-  pointer-events: none;
-  z-index: 999;
-  mix-blend-mode: difference;
-  will-change: transform;
-  transition: opacity 0.2s ease;
-}
-
-.cursor--ring {
-  width: 44px;
-  height: 44px;
-  margin: -22px 0 0 -22px;
-  border: 1px solid var(--on-dark);
-  background: transparent;
-  mix-blend-mode: normal;
-  opacity: 0.55;
-}
-
-.has-custom-cursor,
-.has-custom-cursor a,
-.has-custom-cursor button {
-  cursor: none;
-}
-
-body:not(.has-custom-cursor) .cursor {
-  display: none;
-}
-
-.cursor.is-active {
-  background: var(--lime);
-}
-
-.cursor--ring.is-active {
-  transform: scale(1.6);
-  border-color: var(--lime);
-}
-
 /* ---------- loader ---------- */
 
 .loader {
@@ -363,7 +316,7 @@ body:not(.has-custom-cursor) .cursor {
   pointer-events: none;
 }
 
-.hero__gem {
+.hero__logo {
   position: absolute;
   top: 50%;
   right: -1vw;
@@ -371,11 +324,16 @@ body:not(.has-custom-cursor) .cursor {
   width: 42vw;
   height: 58vh;
   z-index: 1;
-  pointer-events: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.hero__logo.is-grabbing {
+  cursor: grabbing;
 }
 
 @media (max-width: 900px) {
-  .hero__gem {
+  .hero__logo {
     display: none;
   }
 }

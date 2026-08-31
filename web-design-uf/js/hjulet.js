@@ -1,7 +1,6 @@
 import { createBlobScene, createWheelPageScene, createStarfield } from "./webgl.js";
 
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,41 +33,6 @@ document.querySelectorAll('a[href^="#"]').forEach((a) => {
     }
   });
 });
-
-/* ------------------------------------------------------------------ */
-/* Custom cursor                                                       */
-/* ------------------------------------------------------------------ */
-if (supportsHover && !prefersReduced) {
-  document.body.classList.add("has-custom-cursor");
-  const dot = document.querySelector(".cursor--dot");
-  const ring = document.querySelector(".cursor--ring");
-  const moveDotX = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3" });
-  const moveDotY = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3" });
-  const moveRingX = gsap.quickTo(ring, "x", { duration: 0.35, ease: "power3" });
-  const moveRingY = gsap.quickTo(ring, "y", { duration: 0.35, ease: "power3" });
-
-  window.addEventListener(
-    "pointermove",
-    (e) => {
-      moveDotX(e.clientX);
-      moveDotY(e.clientY);
-      moveRingX(e.clientX);
-      moveRingY(e.clientY);
-    },
-    { passive: true }
-  );
-
-  document.querySelectorAll("a, button").forEach((el) => {
-    el.addEventListener("mouseenter", () => {
-      dot.classList.add("is-active");
-      ring.classList.add("is-active");
-    });
-    el.addEventListener("mouseleave", () => {
-      dot.classList.remove("is-active");
-      ring.classList.remove("is-active");
-    });
-  });
-}
 
 /* ------------------------------------------------------------------ */
 /* Starfield + ambient blob + the wheel                                 */
