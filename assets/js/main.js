@@ -59,23 +59,6 @@
   spawnSparkles(document.getElementById('hero-sparkles'), 46);
   spawnSparkles(document.getElementById('cta-sparkles'), 26);
 
-  var mtnLayers = document.querySelectorAll('.mtn-layer[data-speed]');
-  var ticking = false;
-  function updateParallax() {
-    var scrolled = window.scrollY;
-    mtnLayers.forEach(function(layer){
-      var speed = parseFloat(layer.getAttribute('data-speed')) || 0.2;
-      layer.style.transform = 'translateY(' + (scrolled * speed * 0.4) + 'px)';
-    });
-    ticking = false;
-  }
-  window.addEventListener('scroll', function(){
-    if (!ticking) {
-      window.requestAnimationFrame(updateParallax);
-      ticking = true;
-    }
-  }, { passive: true });
-
   document.querySelectorAll('.faq-question').forEach(function(btn){
     btn.addEventListener('click', function(){
       var expanded = btn.getAttribute('aria-expanded') === 'true';
@@ -105,5 +88,18 @@
       });
     }, { threshold: 0.5 });
     sections.forEach(function(sec){ navIo.observe(sec); });
+  }
+
+  var contactForm = document.getElementById('contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = document.getElementById('contact-name').value.trim();
+      var email = document.getElementById('contact-email').value.trim();
+      var message = document.getElementById('contact-message').value.trim();
+      var subject = encodeURIComponent('Meddelande från ' + name);
+      var body = encodeURIComponent(message + '\n\n— ' + name + ' (' + email + ')');
+      window.location.href = 'mailto:hej@pbuf.se?subject=' + subject + '&body=' + body;
+    });
   }
 })();

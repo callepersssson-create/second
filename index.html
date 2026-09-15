@@ -55,21 +55,13 @@
 
 <main>
 
-  <section class="hero" id="hem">
+  <section class="hero photo-bg" id="hem" style="--photo:url('../img/hero-mountain.jpg')">
     <div class="hero-sparkles" id="hero-sparkles" aria-hidden="true"></div>
     <div class="hero-glow" aria-hidden="true"></div>
 
-    <div class="mountains" aria-hidden="true">
-      <svg class="mtn-layer mtn-back" data-speed="0.15" viewBox="0 0 1600 420" preserveAspectRatio="none">
-        <path d="M0 420 0 260 180 120 320 240 480 60 660 220 820 90 1000 250 1180 110 1360 230 1600 140 1600 420Z" fill="var(--mtn-back)"/>
-      </svg>
-      <svg class="mtn-layer mtn-mid" data-speed="0.32" viewBox="0 0 1600 420" preserveAspectRatio="none">
-        <path d="M0 420 0 320 140 200 300 320 460 170 640 320 820 190 1000 330 1180 210 1360 330 1600 240 1600 420Z" fill="var(--mtn-mid)"/>
-      </svg>
-      <svg class="mtn-layer mtn-front" data-speed="0.5" viewBox="0 0 1600 420" preserveAspectRatio="none">
-        <path d="M0 420 0 360 220 250 380 360 560 260 760 380 960 270 1160 380 1360 280 1600 360 1600 420Z" fill="var(--mtn-front)"/>
-      </svg>
-    </div>
+    <svg class="mtn-edge" aria-hidden="true" viewBox="0 0 1600 110" preserveAspectRatio="none">
+      <path d="M0 110 0 70 160 10 300 80 470 20 640 90 810 25 980 85 1150 15 1320 75 1470 30 1600 65 1600 110Z" fill="var(--cream-2)"/>
+    </svg>
 
     <div class="hero-content reveal">
       <p class="eyebrow">Handgjort i hjärtat av fjällen</p>
@@ -127,7 +119,7 @@
   </section>
 
   <section class="section section--builder" id="bygg-din-egen">
-    <div class="mountains mountains--faded" aria-hidden="true">
+    <div class="mountains--faded" aria-hidden="true">
       <svg viewBox="0 0 1600 320" preserveAspectRatio="none"><path d="M0 320 0 220 200 110 360 220 540 90 740 230 940 100 1140 230 1340 120 1600 210 1600 320Z" fill="var(--mtn-mid)"/></svg>
     </div>
     <div class="container">
@@ -273,20 +265,32 @@
         </div>
       </div>
       <div class="about-visual reveal" aria-hidden="true">
-        <div class="about-frame">
-          <svg viewBox="0 0 400 460" preserveAspectRatio="xMidYMid slice">
-            <rect width="400" height="460" fill="var(--cream)"/>
-            <path d="M0 460 0 300 90 210 190 320 260 180 340 280 400 220 400 460Z" fill="var(--mtn-mid)"/>
-            <path d="M0 460 0 360 110 300 220 380 300 300 400 360 400 460Z" fill="var(--mtn-front)"/>
-            <circle cx="315" cy="95" r="42" fill="var(--gold)" opacity="0.85"/>
-            <g fill="none" stroke="#fff" stroke-width="2" opacity="0.55">
-              <circle cx="60" cy="70" r="2.5" fill="#fff" stroke="none"/>
-              <circle cx="140" cy="110" r="2" fill="#fff" stroke="none"/>
-              <circle cx="220" cy="60" r="2.5" fill="#fff" stroke="none"/>
-              <circle cx="80" cy="150" r="1.8" fill="#fff" stroke="none"/>
-            </g>
-          </svg>
-        </div>
+        <div class="about-frame" style="--photo:url('../img/about-mountain.jpg')"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--craft photo-bg" style="--photo:url('../img/craft-mountain.jpg')">
+    <div class="craft-scrim" aria-hidden="true"></div>
+    <div class="container craft-inner">
+      <div class="craft-copy reveal">
+        <p class="kicker kicker--light">Från fjället till dig</p>
+        <h2>Samma luft, samma ljus, samma värme</h2>
+        <p>Vi som driver P&amp;B UF bor med fjällen som utsikt. Varje maska stickas med samma känsla för väder och årstid som vi själva möter varje dag — så att din buff eller ditt pannband håller vad naturen lovar.</p>
+      </div>
+      <div class="testimonial-grid reveal">
+        <blockquote class="testimonial-card">
+          <p>"Mitt pannband är otroligt mjukt och värmer perfekt utan att klia. Riktigt fint mönster också!"</p>
+          <cite>Nöjd kund, Jämtland</cite>
+        </blockquote>
+        <blockquote class="testimonial-card">
+          <p>"Beställde en buff i egna färger — den blev precis som förhandsvisningen. Snabb leverans också."</p>
+          <cite>Nöjd kund, Åre</cite>
+        </blockquote>
+        <blockquote class="testimonial-card">
+          <p>"Håller värmen även på riktigt kalla dagar i backen. Blir nog fler beställningar härifrån."</p>
+          <cite>Nöjd kund, Björnrike</cite>
+        </blockquote>
       </div>
     </div>
   </section>
@@ -361,17 +365,68 @@
     </div>
   </section>
 
-  <section class="section section--cta" id="kontakt">
-    <div class="mountains mountains--cta" aria-hidden="true">
-      <svg viewBox="0 0 1600 360" preserveAspectRatio="none"><path d="M0 360 0 240 220 120 380 250 560 100 760 260 960 110 1160 260 1360 130 1600 230 1600 360Z" fill="var(--mtn-front)"/></svg>
-    </div>
+  <section class="section section--cta photo-bg" style="--photo:url('../img/hero-mountain.jpg')">
+    <div class="cta-scrim" aria-hidden="true"></div>
     <div class="cta-sparkles" aria-hidden="true" id="cta-sparkles"></div>
     <div class="container cta-inner reveal">
       <h2>Redo att bygga din egen?</h2>
       <p>Välj färger, mönster och produkt — och ha din alldeles egna fjällfavorit i mejlkorgen på någon minut.</p>
       <div class="hero-actions">
         <a href="#bygg-din-egen" class="btn btn-primary">Bygg din egen</a>
-        <a href="mailto:hej@pbuf.se" class="btn btn-ghost">hej@pbuf.se</a>
+        <a href="#kontakt" class="btn btn-ghost">Kontakta oss</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--contact" id="kontakt">
+    <div class="container">
+      <p class="kicker reveal">Kontakt</p>
+      <h2 class="reveal">Hör av dig till oss</h2>
+      <p class="section-lead reveal">Frågor om din beställning, en egen idé eller bara nyfiken på fjällivet? Skriv till oss så svarar vi så fort vi kan.</p>
+
+      <div class="contact-grid reveal">
+        <form class="contact-form" id="contact-form" novalidate>
+          <label class="form-field">
+            <span>Namn</span>
+            <input type="text" name="name" id="contact-name" required autocomplete="name">
+          </label>
+          <label class="form-field">
+            <span>E-postadress</span>
+            <input type="email" name="email" id="contact-email" required autocomplete="email">
+          </label>
+          <label class="form-field">
+            <span>Meddelande</span>
+            <textarea name="message" id="contact-message" rows="5" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary btn-block">Skicka meddelande <span aria-hidden="true">→</span></button>
+          <p class="order-note">Skickar öppnar ditt mejlprogram med ett förifyllt meddelande till oss.</p>
+        </form>
+
+        <div class="contact-info">
+          <div class="contact-info-card">
+            <h3>P&amp;B UF</h3>
+            <p>Åsarna, Jämtland</p>
+            <a href="mailto:hej@pbuf.se">hej@pbuf.se</a>
+            <div class="social-row">
+              <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram" class="social-icon">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook" class="social-icon">
+                <svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M15 8.5h-2c-.8 0-1.5.7-1.5 1.5v2h3.3l-.4 3H11.5V21h-3v-6H6v-3h2.5v-2.3C8.5 7.2 10.2 5.5 12.7 5.5H15z"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="contact-map" aria-hidden="true">
+            <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice">
+              <rect width="400" height="260" fill="var(--cream)"/>
+              <path d="M0 260 0 180 70 130 150 190 220 110 300 180 400 140 400 260Z" fill="var(--mtn-mid)" opacity="0.5"/>
+              <path d="M0 260 0 220 100 190 190 230 260 190 400 210 400 260Z" fill="var(--mtn-front)" opacity="0.6"/>
+              <circle cx="205" cy="150" r="7" fill="var(--rust)"/>
+              <circle cx="205" cy="150" r="12" fill="var(--rust)" opacity="0.3"/>
+            </svg>
+            <span class="contact-map-label">Åsarna, Jämtland</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
